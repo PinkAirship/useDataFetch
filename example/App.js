@@ -4,7 +4,7 @@ import MockAdapter from 'axios-mock-adapter'
 import { DataFetchProvider, useDataFetch } from '../src'
 import { nanoid } from 'nanoid'
 
-function makeMockAxios (axiosInstance) {
+export function makeMockAxios (axiosInstance) {
   const mock = new MockAdapter(axiosInstance)
 
   mock.onGet('/userinfo').reply(200, { user: { id: 'my-id' } })
@@ -48,14 +48,14 @@ export default function App () {
   )
 }
 
-export function MakeGet () {
+export function MakeGet ({ show = ({data}) => alert(`User Id: ${data.user.id}`)}) {
   const { get } = useDataFetch('/userinfo')
 
   return (
     <div>
       <input
         type="button"
-        onClick={() => get().then(({data}) => alert(`User Id: ${data.user.id}`)) }
+        onClick={() => get().then(show) }
         value="Make Get"
       />
     </div>
@@ -73,20 +73,22 @@ export function MakeStoredGetFetch () {
   return (
     <div>
       <input type="button" onClick={() => get()} value="Make Stored Get" />
-      {ids.map(id => <div key={id.id}>{id.id}</div>)}
+      {ids.map(id => <div key={id.id}>Created id: {id.id}</div>)}
     </div>
   )
 }
 
 // Alerting the screen reader works with all other data fetch methods
-export function MakeGetWithSrAlert () {
+export function MakeGetWithSrAlert ({
+  show = ({data}) => alert(`User Id: ${data.user.id} - - Check developer console for sr alert`)
+}) {
   const { get } = useDataFetch('/userinfo', { alertScreenReaderWith: 'Messages Came'})
 
   return (
     <div>
       <input
         type="button"
-        onClick={() => get().then(({data}) => alert(`User Id: ${data.user.id} - - Check developer console for sr alert`)) }
+        onClick={() => get().then(show) }
         value="Make Get And Alert Screen Reader"
       />
     </div>
@@ -94,63 +96,63 @@ export function MakeGetWithSrAlert () {
 }
 
 
-export function MakePost () {
+export function MakePost ({ show = ({data}) => alert(`Returned: ${data.message}`) }) {
   const { post } = useDataFetch('/message')
 
   return (
     <div>
       <input
         type="button"
-        onClick={() => post('my data').then(({data}) => alert(`Returned: ${data.message}`)) }
+        onClick={() => post('my data').then(show) }
         value="Make Post"
       />
     </div>
   )
 }
 
-export function MakePut () {
+export function MakePut ({ show = ({data}) => alert(`Replaced with: ${data.message}`) }) {
   const { put } = useDataFetch('/replace')
 
   return (
     <div>
       <input
         type="button"
-        onClick={() => put('different data').then(({data}) => alert(`Replaced with: ${data.message}`)) }
+        onClick={() => put('different data').then(show) }
         value="Make Put"
       />
     </div>
   )
 }
 
-export function MakePatch () {
+export function MakePatch ({ show = ({data}) => alert(`Updated with: ${data.message}`) }) {
   const { patch } = useDataFetch('/update')
 
   return (
     <div>
       <input
         type="button"
-        onClick={() => patch('more different data').then(({data}) => alert(`Updated with: ${data.message}`)) }
+        onClick={() => patch('more different data').then(show) }
         value="Make Patch"
       />
     </div>
   )
 }
 
-export function MakeDelete () {
+export function MakeDelete ({ show = ({data}) => alert(`Removed object with id: ${data.message}`) }) {
   const { destroy } = useDataFetch('/remove')
 
   return (
     <div>
       <input
         type="button"
-        onClick={() => destroy('id').then(({data}) => alert(`Removed object with id: ${data.message}`)) }
+        onClick={() => destroy('id').then(show) }
         value="Make Delete"
       />
     </div>
   )
 }
 
-export function MakeCustom () {
+export function MakeCustom ({ show = ({data}) => alert(`Custom data posted: ${data.message}`) }) {
   const { request } = useDataFetch(undefined, { requestConfig: {
     url: '/message',
     method: 'post',
@@ -161,7 +163,7 @@ export function MakeCustom () {
     <div>
       <input
         type="button"
-        onClick={() => request().then(({data}) => alert(`Custom data posted: ${data.message}`)) }
+        onClick={() => request().then(show) }
         value="Make Custom Call"
       />
     </div>
