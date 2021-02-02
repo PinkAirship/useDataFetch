@@ -8,7 +8,11 @@ function makeMockAxios (axiosInstance) {
   const mock = new MockAdapter(axiosInstance)
 
   mock.onGet('/userinfo').reply(200, { user: { id: 'my-id' } })
-  mock.onGet('/randomId').reply(200, { id: nanoid() })
+  // We want a different id each time this endpoint is called, so make it
+  // a function
+  mock.onGet('/randomId').reply(function (_) {
+    return [200, { id: nanoid() }]
+  })
   mock.onPost('/message').reply(function (config) {
     return [200, { message: config.data }]
   })
@@ -69,7 +73,7 @@ export function MakeStoredGetFetch () {
   return (
     <div>
       <input type="button" onClick={() => get()} value="Make Stored Get" />
-      {ids.map(id => <div key={id}>{id} </div>)}
+      {ids.map(id => <div key={id.id}>{id.id}</div>)}
     </div>
   )
 }
@@ -82,7 +86,7 @@ export function MakeGetWithSrAlert () {
     <div>
       <input
         type="button"
-        onClick={() => get().then(({data}) => alert(`User Id: ${data.user.id}`)) }
+        onClick={() => get().then(({data}) => alert(`User Id: ${data.user.id} - - Check developer console for sr alert`)) }
         value="Make Get And Alert Screen Reader"
       />
     </div>
@@ -157,7 +161,7 @@ export function MakeCustom () {
     <div>
       <input
         type="button"
-        onClick={() => request().then(({data}) => {console.log(data); alert(`Custom data posted: ${data.message}`)}) }
+        onClick={() => request().then(({data}) => alert(`Custom data posted: ${data.message}`)) }
         value="Make Custom Call"
       />
     </div>

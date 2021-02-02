@@ -12,32 +12,14 @@ export function useDataFetch(
 ) {
   const { dataFetchInstance, screenReaderAlert } = useContext(DataFetchContext);
 
-  // requestMethodSetup allows for the request object to set addData as it may not
-  // be set, and to alert the developer that the requestConfig is empty and
-  // must be set
-  const requestMethodSetup = () => {
-    if(!requestConfig.url) {
-      throw 'Request must have url set.'
-    }
-    if(!requestConfig.method) {
-      throw 'Request must have a method set.'
-    }
-    console.log('here')
-    if(!addData) {
-      addData = () => {}
-    }
-  }
-
-
-  function makeRequest(method, data, setupRequest = () => {}) {
-    setupRequest()
+  function makeRequest(method, data) {
     return dataFetchInstance({method, url: path, data, ...requestConfig})
       .then((requestData) => {
-        addData(requestData)
+        if(addData) addData(requestData)
         return requestData
       })
       .then((requestData) => {
-        screenReaderAlert(alertScreenReaderWith)
+        if (alertScreenReaderWith) screenReaderAlert(alertScreenReaderWith)
 
         return requestData
       }).catch(error => error)
@@ -47,8 +29,16 @@ export function useDataFetch(
   const post = (data) => makeRequest('post', data)
   const put = (data) => makeRequest('put', data)
   const patch = (data) => makeRequest('patch', data)
-  const destroy = (data) => makeRequest('destroy', data)
-  const request = () => makeRequest('request', undefined, requestMethodSetup)
+  const destroy = (data) => makeRequest('delete', data)
+  const request = () => {
+    if(!requestConfig.url) {
+      throw 'Request must have url set.'
+    }
+    if(!requestConfig.method) {
+      throw 'Request must have a method set.'
+    }
+    return makeRequest('request')
+  }
 
   return {
     get,
