@@ -16,8 +16,9 @@
   "keywords": [
     "react",
     "hooks",
-    "toast",
-    "alert"
+    "api",
+    "request",
+    "http"
   ],
   "author": "Marc Phillips",
   "license": "MIT",
