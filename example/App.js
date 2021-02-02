@@ -13,6 +13,9 @@ export function makeMockAxios (axiosInstance) {
   mock.onGet('/randomId').reply(function (_) {
     return [200, { id: nanoid() }]
   })
+  mock.onGet('/getWithData').reply(function (config) {
+    return [200, { message: config.data }]
+  })
   mock.onPost('/message').reply(function (config) {
     return [200, { message: config.data }]
   })
@@ -36,6 +39,7 @@ export default function App () {
     >
       <div>
         <MakeGet />
+        <MakeGetWithData />
         <MakePost />
         <MakePut />
         <MakePatch />
@@ -43,6 +47,7 @@ export default function App () {
         <MakeCustom />
         <MakeGetWithSrAlert />
         <MakeStoredGetFetch />
+        <MakeCustomOverwriteData />
       </div>
     </DataFetchProvider>
   )
@@ -57,6 +62,20 @@ export function MakeGet ({ show = ({data}) => alert(`User Id: ${data.user.id}`)}
         type="button"
         onClick={() => get().then(show) }
         value="Make Get"
+      />
+    </div>
+  )
+}
+
+export function MakeGetWithData ({ show = ({data}) => alert(`Message: ${data.message}`)}) {
+  const { get } = useDataFetch('/getWithData')
+
+  return (
+    <div>
+      <input
+        type="button"
+        onClick={() => get('my message of get').then(show) }
+        value="Make Get with Data"
       />
     </div>
   )
@@ -164,6 +183,24 @@ export function MakeCustom ({ show = ({data}) => alert(`Custom data posted: ${da
       <input
         type="button"
         onClick={() => request().then(show) }
+        value="Make Custom Call"
+      />
+    </div>
+  )
+}
+
+export function MakeCustomOverwriteData ({ show = ({data}) => alert(`Custom data posted: ${data.message}`) }) {
+  const { request } = useDataFetch(undefined, { requestConfig: {
+    url: '/message',
+    method: 'post',
+    data: 'my-custom-message'
+  }})
+
+  return (
+    <div>
+      <input
+        type="button"
+        onClick={() => request('overwritten data').then(show) }
         value="Make Custom Call"
       />
     </div>

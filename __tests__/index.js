@@ -10,6 +10,8 @@ import {
   MakeCustom,
   MakeGetWithSrAlert,
   MakeStoredGetFetch,
+  MakeCustomOverwriteData,
+  MakeGetWithData,
   makeMockAxios
 } from '../example/App'
 import { DataFetchProvider } from "../src/contexts/data-fetch-provider";
@@ -35,6 +37,14 @@ it('returns successfully on Make Get', async () => {
   const button = await findByText(/Make Get/);
   button.click()
   await waitFor(() => {expect(show.mock.calls[0][0].data).toHaveProperty('user.id', 'my-id')})
+});
+
+it('returns successfully on Make Get with Data', async () => {
+  const show = jest.fn();
+  const { findByText } = renderComponent(<MakeGetWithData show={show}/>);
+  const button = await findByText(/Make Get with Data/);
+  button.click()
+  await waitFor(() => {expect(show.mock.calls[0][0].data).toHaveProperty('message', 'my message of get')})
 });
 
 it('returns successfully on Make Post', async () => {
@@ -75,6 +85,14 @@ it('returns successfully on Make Custom', async () => {
   const button = await findByText(/Make Custom/);
   button.click()
   await waitFor(() => {expect(show.mock.calls[0][0].data).toHaveProperty('message', 'my-custom-message')})
+});
+
+it('overwrites data successfully on Make Custom', async () => {
+  const show = jest.fn();
+  const { findByText } = renderComponent(<MakeCustomOverwriteData show={show}/>);
+  const button = await findByText(/Make Custom/);
+  button.click()
+  await waitFor(() => {expect(show.mock.calls[0][0].data).toHaveProperty('message', 'overwritten data')})
 });
 
 it('returns successfully on Make Get with Sr Alert', async () => {
