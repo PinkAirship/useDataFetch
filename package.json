@@ -34,7 +34,9 @@
     "access": "public"
   },
   "sideEffects": false,
-  "dependencies": {},
+  "dependencies": {
+    "lru-cache": "^6.0.0"
+  },
   "devDependencies": {
     "@babel/core": "^7.12.10",
     "@babel/plugin-proposal-object-rest-spread": "^7.12.1",

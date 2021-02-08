@@ -4,7 +4,7 @@ import MockAdapter from 'axios-mock-adapter'
 import { DataFetchProvider, useDataFetch } from '../src'
 import { nanoid } from 'nanoid'
 
-export function makeMockAxios (axiosInstance) {
+export function makeMockAxios(axiosInstance) {
   const mock = new MockAdapter(axiosInstance)
 
   mock.onGet('/userinfo').reply(200, { user: { id: 'my-id' } })
@@ -30,8 +30,7 @@ export function makeMockAxios (axiosInstance) {
   })
 }
 
-
-export default function App () {
+export default function App() {
   return (
     <DataFetchProvider
       screenReaderAlert={(message) => console.log(message)}
@@ -39,7 +38,10 @@ export default function App () {
     >
       <div>
         <MakeGet />
+        <MakeRandomGet />
         <MakeGetWithData />
+        <MakeMethodDefinedCachedGet />
+        <MakeCallDefinedCachedGet />
         <MakePost />
         <MakePut />
         <MakePatch />
@@ -53,28 +55,77 @@ export default function App () {
   )
 }
 
-export function MakeGet ({ show = ({data}) => alert(`User Id: ${data.user.id}`)}) {
+export function MakeGet({
+  show = ({ data }) => alert(`User Id: ${data.user.id}`),
+}) {
   const { get } = useDataFetch('/userinfo')
+
+  return (
+    <div>
+      <input type="button" onClick={() => get().then(show)} value="Make Get" />
+    </div>
+  )
+}
+
+export function MakeRandomGet({
+  show = ({ data: { id: id } }) => alert(`User Id: ${id}`),
+  buttonText = 'Make Random Get',
+}) {
+  const { get } = useDataFetch('/randomId')
 
   return (
     <div>
       <input
         type="button"
-        onClick={() => get().then(show) }
-        value="Make Get"
+        onClick={() => get().then(show)}
+        value={buttonText}
       />
     </div>
   )
 }
 
-export function MakeGetWithData ({ show = ({data}) => alert(`Message: ${data.message}`)}) {
+export function MakeMethodDefinedCachedGet({
+  show = ({ data: { id: id } }) => alert(`User Id: ${id}`),
+}) {
+  const { get } = useDataFetch('/randomId', { useCache: true })
+
+  return (
+    <div>
+      <input
+        type="button"
+        onClick={() => get().then(show)}
+        value="Make Cached Get - Method Definition"
+      />
+    </div>
+  )
+}
+
+export function MakeCallDefinedCachedGet({
+  show = ({ data: { id: id } }) => alert(`User Id: ${id}`),
+}) {
+  const { get } = useDataFetch('/randomId', false)
+
+  return (
+    <div>
+      <input
+        type="button"
+        onClick={() => get(undefined, true).then(show)}
+        value="Make Cached Get - Called"
+      />
+    </div>
+  )
+}
+
+export function MakeGetWithData({
+  show = ({ data }) => alert(`Message: ${data.message}`),
+}) {
   const { get } = useDataFetch('/getWithData')
 
   return (
     <div>
       <input
         type="button"
-        onClick={() => get('my message of get').then(show) }
+        onClick={() => get('my message of get').then(show)}
         value="Make Get with Data"
       />
     </div>
@@ -82,126 +133,193 @@ export function MakeGetWithData ({ show = ({data}) => alert(`Message: ${data.mes
 }
 
 // Storing the data works with all other data fetch methods
-export function MakeStoredGetFetch () {
+export function MakeStoredGetFetch() {
   const [ids, setIds] = useState([])
-  const { get } = useDataFetch(
-    '/randomId',
-    { addData: ({ data: id }) => setIds([...ids, id]) }
-  )
+  const { get } = useDataFetch('/randomId', {
+    addData: ({ data: id }) => setIds([...ids, id]),
+  })
 
   return (
     <div>
       <input type="button" onClick={() => get()} value="Make Stored Get" />
-      {ids.map(id => <div key={id.id}>Created id: {id.id}</div>)}
+      {ids.map((id) => (
+        <div key={id.id}>Created id: {id.id}</div>
+      ))}
     </div>
   )
 }
 
 // Alerting the screen reader works with all other data fetch methods
-export function MakeGetWithSrAlert ({
-  show = ({data}) => alert(`User Id: ${data.user.id} - - Check developer console for sr alert`)
+export function MakeGetWithSrAlert({
+  show = ({ data }) =>
+    alert(`User Id: ${data.user.id} - - Check developer console for sr alert`),
 }) {
-  const { get } = useDataFetch('/userinfo', { alertScreenReaderWith: 'Messages Came'})
+  const { get } = useDataFetch('/userinfo', {
+    alertScreenReaderWith: 'Messages Came',
+  })
 
   return (
     <div>
       <input
         type="button"
-        onClick={() => get().then(show) }
+        onClick={() => get().then(show)}
         value="Make Get And Alert Screen Reader"
       />
     </div>
   )
 }
 
-
-export function MakePost ({ show = ({data}) => alert(`Returned: ${data.message}`) }) {
+export function MakePost({
+  show = ({ data }) => alert(`Returned: ${data.message}`),
+}) {
   const { post } = useDataFetch('/message')
 
   return (
     <div>
       <input
         type="button"
-        onClick={() => post('my data').then(show) }
+        onClick={() => post('my data').then(show)}
         value="Make Post"
       />
     </div>
   )
 }
 
-export function MakePut ({ show = ({data}) => alert(`Replaced with: ${data.message}`) }) {
+export function MakePut({
+  show = ({ data }) => alert(`Replaced with: ${data.message}`),
+}) {
   const { put } = useDataFetch('/replace')
 
   return (
     <div>
       <input
         type="button"
-        onClick={() => put('different data').then(show) }
+        onClick={() => put('different data').then(show)}
         value="Make Put"
       />
     </div>
   )
 }
 
-export function MakePatch ({ show = ({data}) => alert(`Updated with: ${data.message}`) }) {
+export function MakePatch({
+  show = ({ data }) => alert(`Updated with: ${data.message}`),
+}) {
   const { patch } = useDataFetch('/update')
 
   return (
     <div>
       <input
         type="button"
-        onClick={() => patch('more different data').then(show) }
+        onClick={() => patch('more different data').then(show)}
         value="Make Patch"
       />
     </div>
   )
 }
 
-export function MakeDelete ({ show = ({data}) => alert(`Removed object with id: ${data.message}`) }) {
+export function MakeDelete({
+  show = ({ data }) => alert(`Removed object with id: ${data.message}`),
+}) {
   const { destroy } = useDataFetch('/remove')
 
   return (
     <div>
       <input
         type="button"
-        onClick={() => destroy('id').then(show) }
+        onClick={() => destroy('id').then(show)}
         value="Make Delete"
       />
     </div>
   )
 }
 
-export function MakeCustom ({ show = ({data}) => alert(`Custom data posted: ${data.message}`) }) {
-  const { request } = useDataFetch(undefined, { requestConfig: {
-    url: '/message',
-    method: 'post',
-    data: 'my-custom-message'
-  }})
+export function MakeCustom({
+  show = ({ data }) => alert(`Custom data posted: ${data.message}`),
+}) {
+  const { request } = useDataFetch(undefined, {
+    requestConfig: {
+      url: '/message',
+      method: 'post',
+      data: 'my-custom-message',
+    },
+  })
 
   return (
     <div>
       <input
         type="button"
-        onClick={() => request().then(show) }
+        onClick={() => request().then(show)}
         value="Make Custom Call"
       />
     </div>
   )
 }
 
-export function MakeCustomOverwriteData ({ show = ({data}) => alert(`Custom data posted: ${data.message}`) }) {
-  const { request } = useDataFetch(undefined, { requestConfig: {
-    url: '/message',
-    method: 'post',
-    data: 'my-custom-message'
-  }})
+export function MakeCustomOverwriteData({
+  show = ({ data }) => alert(`Custom data posted: ${data.message}`),
+}) {
+  const { request } = useDataFetch(undefined, {
+    requestConfig: {
+      url: '/message',
+      method: 'post',
+      data: 'my-custom-message',
+    },
+  })
 
   return (
     <div>
       <input
         type="button"
-        onClick={() => request('overwritten data').then(show) }
+        onClick={() => request('overwritten data').then(show)}
         value="Make Custom Call"
+      />
+    </div>
+  )
+}
+
+export function AppSecond() {
+  return (
+    <DataFetchProvider
+      screenReaderAlert={(message) => console.log(message)}
+      makeMockDataFetchInstance={makeMockAxios}
+      useCache={true}
+    >
+      <div>
+        <MakeRandomGet buttonText="Make Random Get - Context Override Cache" />
+        <MakeMethodDefinedCachedGetFalse />
+        <MakeCallDefinedCachedGetFalse />
+      </div>
+    </DataFetchProvider>
+  )
+}
+
+export function MakeMethodDefinedCachedGetFalse({
+  show = ({ data: { id: id } }) => alert(`User Id: ${id}`),
+}) {
+  const { get } = useDataFetch('/randomId', { useCache: false })
+
+  return (
+    <div>
+      <input
+        type="button"
+        onClick={() => get().then(show)}
+        value="Make Cached Get - Method Definition - Override Cache Behavior"
+      />
+    </div>
+  )
+}
+
+export function MakeCallDefinedCachedGetFalse({
+  show = ({ data: { id: id } }) => alert(`User Id: ${id}`),
+}) {
+  const { get } = useDataFetch('/randomId', true)
+
+  return (
+    <div>
+      <input
+        type="button"
+        onClick={() => get(undefined, false).then(show)}
+        value="Make Cached Get - Called - Override Cache Behavior"
       />
     </div>
   )

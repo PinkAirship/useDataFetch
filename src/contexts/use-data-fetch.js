@@ -1,45 +1,76 @@
-import { useContext } from "react";
-import { DataFetchContext } from "./data-fetch-provider";
+import { useContext } from 'react'
+import { DataFetchContext } from './data-fetch-provider'
 
 export function useDataFetch(
   path,
   {
     addData: addData,
-    alertScreenReaderWith:
+    alertScreenReaderWith: alertScreenReaderWith,
+    requestConfig: requestConfig,
+    useCache: useCache,
+  } = {
+    addData: () => {},
     alertScreenReaderWith,
-    requestConfig: requestConfig
-  } = { addData: () => {}, alertScreenReaderWith, requestConfig: {} }
+    requestConfig: {},
+    useCache: undefined,
+  }
 ) {
-  const { dataFetchInstance, screenReaderAlert } = useContext(DataFetchContext);
+  const {
+    dataFetchInstance,
+    screenReaderAlert,
+    cache,
+    useCache: contextUseCache,
+  } = useContext(DataFetchContext)
 
-  function makeRequest(method, data) {
+  function makeRequest(method, data, methodUseCache) {
+    // Order of precedence: method use - method defined - context defined
+    let computedUseCache =
+      typeof useCache != 'undefined' ? useCache : contextUseCache
+    computedUseCache =
+      typeof methodUseCache != 'undefined' ? methodUseCache : computedUseCache
+
+    if (computedUseCache) {
+      const cachedValue = cache.get(path)
+      if (cachedValue) {
+        return Promise.resolve(cachedValue)
+      }
+    }
     // don't overwrite data from requestConfig unless it is present.
-    const requestData = data ? {data} : {}
-    return dataFetchInstance({method, url: path, ...requestConfig, ...requestData })
+    const requestData = data ? { data } : {}
+    return dataFetchInstance({
+      method,
+      url: path,
+      ...requestConfig,
+      ...requestData,
+    })
       .then((requestData) => {
-        if(addData) addData(requestData)
+        if (computedUseCache) cache.set(path, requestData)
+        return requestData
+      })
+      .then((requestData) => {
+        if (addData) addData(requestData)
         return requestData
       })
       .then((requestData) => {
         if (alertScreenReaderWith) screenReaderAlert(alertScreenReaderWith)
-
         return requestData
-      }).catch(error => error)
+      })
+      .catch((error) => error)
   }
 
-  const get = (data) => makeRequest('get', data)
-  const post = (data) => makeRequest('post', data)
-  const put = (data) => makeRequest('put', data)
-  const patch = (data) => makeRequest('patch', data)
-  const destroy = (data) => makeRequest('delete', data)
-  const request = (data) => {
-    if(!requestConfig.url) {
+  const get = (data, useCache) => makeRequest('get', data, useCache)
+  const post = (data, useCache) => makeRequest('post', data, useCache)
+  const put = (data, useCache) => makeRequest('put', data, useCache)
+  const patch = (data, useCache) => makeRequest('patch', data, useCache)
+  const destroy = (data, useCache) => makeRequest('delete', data, useCache)
+  const request = (data, useCache) => {
+    if (!requestConfig.url) {
       throw 'Request must have url set.'
     }
-    if(!requestConfig.method) {
+    if (!requestConfig.method) {
       throw 'Request must have a method set.'
     }
-    return makeRequest('request', data)
+    return makeRequest('request', data, useCache)
   }
 
   return {
@@ -48,6 +79,6 @@ export function useDataFetch(
     put,
     patch,
     destroy,
-    request
-  };
+    request,
+  }
 }

@@ -1,11 +1,11 @@
-import React from "react";
+import React from 'react'
 import axios from 'axios'
+import LruCache from 'lru-cache'
 
 export const DataFetchContext = React.createContext({
   dataFetchInstance: null,
-  screenReaderAlert: () => {}
-});
-
+  screenReaderAlert: () => {},
+})
 
 function setupAxios(axiosCreateOpts) {
   const axiosInstance = axios.create(axiosCreateOpts)
@@ -16,7 +16,9 @@ export function DataFetchProvider({
   dataFetchInstance = null,
   axiosCreateOpts = {},
   screenReaderAlert = (message) => {},
-  makeMockDataFetchInstance = null
+  makeMockDataFetchInstance = null,
+  useCache = false,
+  cacheSize = 50,
 }) {
   if (makeMockDataFetchInstance && dataFetchInstance) {
     throw 'Cannot use `makeMockDataFetchInstance` and `dataFetchInstance` together.'
@@ -29,14 +31,18 @@ export function DataFetchProvider({
     }
   }
 
+  const cache = new LruCache(cacheSize)
+
   const contextValue = {
     dataFetchInstance,
-    screenReaderAlert
-  };
+    screenReaderAlert,
+    cache,
+    useCache,
+  }
 
   return (
     <DataFetchContext.Provider value={contextValue}>
       {children}
     </DataFetchContext.Provider>
-  );
+  )
 }
