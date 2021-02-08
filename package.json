@@ -1,6 +1,6 @@
 {
   "name": "@pinkairship/use-data-fetch",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "A data fetch hook that stays out of your way.",
   "main": "dist/index.js",
   "scripts": {
