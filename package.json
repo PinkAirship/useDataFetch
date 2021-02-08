@@ -9,7 +9,7 @@
     "preversion": "npm test && npm run build",
     "postversion": "git push && git push --tags && npm publish --access public",
     "version:patch": "npm version patch",
-    "prepublishOnly": "npm run build && npm publish --dry-run",
+    "prepublishOnly": "npm run build",
     "build": "rm -rf dist && webpack && cp LICENSE dist/LICENSE",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix"
