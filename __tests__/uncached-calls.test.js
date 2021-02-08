@@ -148,7 +148,8 @@ it('creates divs with ids when clicked for Make Stored Get Fetch', async () => {
   const { findByText, queryAllByText } = render(
     <MakeStoredGetFetch />
   )
-  const createdIdNodes = await queryAllByText(/Created id/)
+  const createdIdNodes = queryAllByText(/Created id/)
+  // eslint-disable-next-line jest-dom/prefer-in-document
   expect(createdIdNodes).toHaveLength(0)
   const button = await findByText(/Make Stored Get/)
   button.click()

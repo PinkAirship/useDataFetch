@@ -9,7 +9,9 @@
     "eslint:recommended",
     "plugin:prettier/recommended",
     "plugin:react/recommended",
-    "plugin:react-hooks/recommended"
+    "plugin:react-hooks/recommended",
+    "plugin:testing-library/recommended",
+    "plugin:jest-dom/recommended"
   ],
   "parser": "@babel/eslint-parser",
   "parserOptions": {
