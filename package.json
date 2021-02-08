@@ -1,12 +1,15 @@
 {
   "name": "@pinkairship/use-data-fetch",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "A data fetch hook that stays out of your way.",
   "main": "dist/index.js",
   "scripts": {
     "test": "jest",
     "start": "webpack serve --config webpack.config.js --progress --profile --watch --content-base src/",
-    "prepublishOnly": "npm run build",
+    "preversion": "npm test && npm run build",
+    "postversion": "git push && git push --tags && npm publish --access public",
+    "version:patch": "npm version patch",
+    "prepublishOnly": "npm run build && npm publish --dry-run",
     "build": "rm -rf dist && webpack && cp LICENSE dist/LICENSE",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix"
