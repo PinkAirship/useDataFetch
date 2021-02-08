@@ -26,7 +26,10 @@ it('returns successfully on Make Get', async () => {
   const button = await findByText(/Make Get/)
   button.click()
   await waitFor(() => {
-    expect(show.mock.calls[0][0].data).toHaveProperty('user.id', 'my-id')
+    expect(show.mock.calls[0][0].data).toHaveProperty(
+      'user.id',
+      'my-id'
+    )
   })
 })
 
@@ -49,7 +52,10 @@ it('returns successfully on Make Post', async () => {
   const button = await findByText(/Make Post/)
   button.click()
   await waitFor(() => {
-    expect(show.mock.calls[0][0].data).toHaveProperty('message', 'my data')
+    expect(show.mock.calls[0][0].data).toHaveProperty(
+      'message',
+      'my data'
+    )
   })
 })
 
@@ -104,7 +110,9 @@ it('returns successfully on Make Custom', async () => {
 
 it('overwrites data successfully on Make Custom', async () => {
   const show = jest.fn()
-  const { findByText } = render(<MakeCustomOverwriteData show={show} />)
+  const { findByText } = render(
+    <MakeCustomOverwriteData show={show} />
+  )
   const button = await findByText(/Make Custom/)
   button.click()
   await waitFor(() => {
@@ -124,15 +132,22 @@ it('returns successfully on Make Get with Sr Alert', async () => {
   const button = await findByText(/Make Get And Alert Screen Reader/)
   button.click()
   await waitFor(() => {
-    expect(show.mock.calls[0][0].data).toHaveProperty('user.id', 'my-id')
+    expect(show.mock.calls[0][0].data).toHaveProperty(
+      'user.id',
+      'my-id'
+    )
   })
   await waitFor(() => {
-    expect(screenReaderAlert.mock.calls[0][0]).toEqual('Messages Came')
+    expect(screenReaderAlert.mock.calls[0][0]).toEqual(
+      'Messages Came'
+    )
   })
 })
 
 it('creates divs with ids when clicked for Make Stored Get Fetch', async () => {
-  const { findByText, queryAllByText } = render(<MakeStoredGetFetch />)
+  const { findByText, queryAllByText } = render(
+    <MakeStoredGetFetch />
+  )
   const createdIdNodes = await queryAllByText(/Created id/)
   expect(createdIdNodes).toHaveLength(0)
   const button = await findByText(/Make Stored Get/)

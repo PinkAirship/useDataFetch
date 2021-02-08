@@ -15,7 +15,7 @@ export function DataFetchProvider({
   children,
   dataFetchInstance = null,
   axiosCreateOpts = {},
-  screenReaderAlert = (message) => {},
+  screenReaderAlert = () => {},
   makeMockDataFetchInstance = null,
   useCache = false,
   cacheSize = 50,

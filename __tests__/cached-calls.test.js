@@ -19,8 +19,12 @@ it('returns different random id with each button press', async () => {
   button.click()
   await waitFor(() => {
     expect(show).toHaveBeenCalledTimes(3)
-    expect(show.mock.calls[0][0].data).not.toEqual(show.mock.calls[1][0].data)
-    expect(show.mock.calls[1][0].data).not.toEqual(show.mock.calls[2][0].data)
+    expect(show.mock.calls[0][0].data).not.toEqual(
+      show.mock.calls[1][0].data
+    )
+    expect(show.mock.calls[1][0].data).not.toEqual(
+      show.mock.calls[2][0].data
+    )
   })
 })
 
@@ -40,15 +44,20 @@ it('returns same random id with each button press with useCache = true at contex
     expect(show).toHaveBeenCalledTimes(2)
   })
   await waitFor(() => {
-    expect(show.mock.calls[0][0].data).toEqual(show.mock.calls[1][0].data)
+    expect(show.mock.calls[0][0].data).toEqual(
+      show.mock.calls[1][0].data
+    )
   })
 })
 
 it('returns same random id with each button press with useCache = true at method level', async () => {
   const show = jest.fn()
-  const { findByText } = render(<MakeMethodDefinedCachedGet show={show} />, {
-    useCache: false,
-  })
+  const { findByText } = render(
+    <MakeMethodDefinedCachedGet show={show} />,
+    {
+      useCache: false,
+    }
+  )
   const button = await findByText(/Make Cached Get/)
   button.click()
   await waitFor(() => {
@@ -60,15 +69,20 @@ it('returns same random id with each button press with useCache = true at method
     expect(show).toHaveBeenCalledTimes(2)
   })
   await waitFor(() => {
-    expect(show.mock.calls[0][0].data).toEqual(show.mock.calls[1][0].data)
+    expect(show.mock.calls[0][0].data).toEqual(
+      show.mock.calls[1][0].data
+    )
   })
 })
 
 it('returns same random id with each button press with useCache = true at call level', async () => {
   const show = jest.fn()
-  const { findByText } = render(<MakeCallDefinedCachedGet show={show} />, {
-    useCache: false,
-  })
+  const { findByText } = render(
+    <MakeCallDefinedCachedGet show={show} />,
+    {
+      useCache: false,
+    }
+  )
   const button = await findByText(/Make Cached Get/)
   button.click()
   await waitFor(() => {
@@ -80,7 +94,9 @@ it('returns same random id with each button press with useCache = true at call l
     expect(show).toHaveBeenCalledTimes(2)
   })
   await waitFor(() => {
-    expect(show.mock.calls[0][0].data).toEqual(show.mock.calls[1][0].data)
+    expect(show.mock.calls[0][0].data).toEqual(
+      show.mock.calls[1][0].data
+    )
   })
 })
 
@@ -103,15 +119,20 @@ it('returns different random id with each button press with useCache = true at c
     expect(show).toHaveBeenCalledTimes(2)
   })
   await waitFor(() => {
-    expect(show.mock.calls[0][0].data).not.toEqual(show.mock.calls[1][0].data)
+    expect(show.mock.calls[0][0].data).not.toEqual(
+      show.mock.calls[1][0].data
+    )
   })
 })
 
 it('returns different random id with each button press with useCache = true at context level but override at call', async () => {
   const show = jest.fn()
-  const { findByText } = render(<MakeCallDefinedCachedGetFalse show={show} />, {
-    useCache: true,
-  })
+  const { findByText } = render(
+    <MakeCallDefinedCachedGetFalse show={show} />,
+    {
+      useCache: true,
+    }
+  )
   const button = await findByText(/Make Cached Get/)
   button.click()
   await waitFor(() => {
@@ -123,6 +144,8 @@ it('returns different random id with each button press with useCache = true at c
     expect(show).toHaveBeenCalledTimes(2)
   })
   await waitFor(() => {
-    expect(show.mock.calls[0][0].data).not.toEqual(show.mock.calls[1][0].data)
+    expect(show.mock.calls[0][0].data).not.toEqual(
+      show.mock.calls[1][0].data
+    )
   })
 })

@@ -1,10 +1,10 @@
-const path = require('path');
-const webpack = require('webpack');
-const HtmlWebpackPlugin = require('html-webpack-plugin');
+const path = require('path')
+const webpack = require('webpack')
+const HtmlWebpackPlugin = require('html-webpack-plugin')
 
-module.exports = env => {
-  const isBuild = env.WEBPACK_BUILD;
-  const isDev = env.WEBPACK_SERVE;
+module.exports = (env) => {
+  const isBuild = env.WEBPACK_BUILD
+  const isDev = env.WEBPACK_SERVE
 
   return {
     mode: isBuild ? 'production' : 'development',
@@ -12,7 +12,7 @@ module.exports = env => {
     output: {
       path: path.resolve(__dirname, !isDev ? 'dist' : 'build'),
       filename: 'index.js',
-      libraryTarget: 'umd'
+      libraryTarget: 'umd',
     },
     devServer: {
       contentBase: [path.join(__dirname, 'build')],
@@ -21,24 +21,24 @@ module.exports = env => {
     },
     devtool: isDev && 'inline-source-map',
     externals: isBuild
-    ? {
-        react: {
-          root: 'React',
-          commonjs2: 'react',
-          commonjs: 'react',
-          amd: 'react',
-          umd: 'react',
-        },
-      }
-    : {},
+      ? {
+          react: {
+            root: 'React',
+            commonjs2: 'react',
+            commonjs: 'react',
+            amd: 'react',
+            umd: 'react',
+          },
+        }
+      : {},
     module: {
       rules: [
         {
           test: /\.js$/,
           exclude: path.join(__dirname, '/node_modules/'),
           loader: 'babel-loader',
-        }
-      ]
+        },
+      ],
     },
     plugins: [
       !isBuild &&
@@ -47,5 +47,5 @@ module.exports = env => {
         }),
       isDev && new webpack.HotModuleReplacementPlugin(),
     ].filter(Boolean),
-  };
+  }
 }

@@ -10,7 +10,7 @@ export function makeMockAxios(axiosInstance) {
   mock.onGet('/userinfo').reply(200, { user: { id: 'my-id' } })
   // We want a different id each time this endpoint is called, so make it
   // a function
-  mock.onGet('/randomId').reply(function (_) {
+  mock.onGet('/randomId').reply(function () {
     return [200, { id: nanoid() }]
   })
   mock.onGet('/getWithData').reply(function (config) {
@@ -62,7 +62,11 @@ export function MakeGet({
 
   return (
     <div>
-      <input type="button" onClick={() => get().then(show)} value="Make Get" />
+      <input
+        type="button"
+        onClick={() => get().then(show)}
+        value="Make Get"
+      />
     </div>
   )
 }
@@ -141,7 +145,11 @@ export function MakeStoredGetFetch() {
 
   return (
     <div>
-      <input type="button" onClick={() => get()} value="Make Stored Get" />
+      <input
+        type="button"
+        onClick={() => get()}
+        value="Make Stored Get"
+      />
       {ids.map((id) => (
         <div key={id.id}>Created id: {id.id}</div>
       ))}
@@ -152,7 +160,9 @@ export function MakeStoredGetFetch() {
 // Alerting the screen reader works with all other data fetch methods
 export function MakeGetWithSrAlert({
   show = ({ data }) =>
-    alert(`User Id: ${data.user.id} - - Check developer console for sr alert`),
+    alert(
+      `User Id: ${data.user.id} - - Check developer console for sr alert`
+    ),
 }) {
   const { get } = useDataFetch('/userinfo', {
     alertScreenReaderWith: 'Messages Came',
@@ -218,7 +228,8 @@ export function MakePatch({
 }
 
 export function MakeDelete({
-  show = ({ data }) => alert(`Removed object with id: ${data.message}`),
+  show = ({ data }) =>
+    alert(`Removed object with id: ${data.message}`),
 }) {
   const { destroy } = useDataFetch('/remove')
 

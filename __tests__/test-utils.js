@@ -6,7 +6,10 @@ import { makeMockAxios } from '../example/App'
 
 export function render(ui, props = {}, renderOptions = {}) {
   return baseRender(
-    <DataFetchProvider makeMockDataFetchInstance={makeMockAxios} {...props}>
+    <DataFetchProvider
+      makeMockDataFetchInstance={makeMockAxios}
+      {...props}
+    >
       {ui}
     </DataFetchProvider>,
     renderOptions

@@ -27,7 +27,9 @@ export function useDataFetch(
     let computedUseCache =
       typeof useCache != 'undefined' ? useCache : contextUseCache
     computedUseCache =
-      typeof methodUseCache != 'undefined' ? methodUseCache : computedUseCache
+      typeof methodUseCache != 'undefined'
+        ? methodUseCache
+        : computedUseCache
 
     if (computedUseCache) {
       const cachedValue = cache.get(path)
@@ -52,7 +54,8 @@ export function useDataFetch(
         return requestData
       })
       .then((requestData) => {
-        if (alertScreenReaderWith) screenReaderAlert(alertScreenReaderWith)
+        if (alertScreenReaderWith)
+          screenReaderAlert(alertScreenReaderWith)
         return requestData
       })
       .catch((error) => error)
@@ -61,8 +64,10 @@ export function useDataFetch(
   const get = (data, useCache) => makeRequest('get', data, useCache)
   const post = (data, useCache) => makeRequest('post', data, useCache)
   const put = (data, useCache) => makeRequest('put', data, useCache)
-  const patch = (data, useCache) => makeRequest('patch', data, useCache)
-  const destroy = (data, useCache) => makeRequest('delete', data, useCache)
+  const patch = (data, useCache) =>
+    makeRequest('patch', data, useCache)
+  const destroy = (data, useCache) =>
+    makeRequest('delete', data, useCache)
   const request = (data, useCache) => {
     if (!requestConfig.url) {
       throw 'Request must have url set.'

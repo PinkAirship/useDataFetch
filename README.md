@@ -40,7 +40,11 @@ export function MakeGet({
 
   return (
     <div>
-      <input type="button" onClick={() => get().then(show)} value="Make Get" />
+      <input
+        type="button"
+        onClick={() => get().then(show)}
+        value="Make Get"
+      />
     </div>
   )
 }
@@ -176,7 +180,11 @@ function MakeStoredGetFetch() {
 
   return (
     <div>
-      <input type="button" onClick={() => get()} value="Make Stored Get" />
+      <input
+        type="button"
+        onClick={() => get()}
+        value="Make Stored Get"
+      />
       {ids.map((id) => (
         <div key={id.id}>Created id: {id.id}</div>
       ))}
@@ -228,7 +236,7 @@ function App() {
 
 `axiosCreateOpts` - An object that conforms to the axios configuration api (see [https://github.com/axios/axios#request-config](https://github.com/axios/axios#request-config)) to be used when creating the dataFetchInstance.
 
-`screenReaderAlert` - The function your app uses to alert screenreaders. For more information, visit [https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/ARIA_Live_Regions](https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/ARIA_Live_Regions).
+`screenReaderAlert` - The function your app uses to alert screenreaders. For more information, visit [https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/ARIA_Live_Regions](https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/ARIA_Live_Regions). The function will be passed the value of `alertScreenReaderWith`.
 
 `makeMockDataFetchInstance` - A function that is used to wrap the dataFetchInstance calls for testing purposes. For example, the example app uses [https://github.com/ctimmerm/axios-mock-adapter](https://github.com/ctimmerm/axios-mock-adapter).
 

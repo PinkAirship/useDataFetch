@@ -7,7 +7,9 @@
     "test": "jest",
     "start": "webpack serve --config webpack.config.js --progress --profile --watch --content-base src/",
     "prepublishOnly": "npm run build",
-    "build": "rm -rf dist && webpack && cp LICENSE dist/LICENSE"
+    "build": "rm -rf dist && webpack && cp LICENSE dist/LICENSE",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix"
   },
   "repository": {
     "type": "git",
@@ -39,6 +41,7 @@
   },
   "devDependencies": {
     "@babel/core": "^7.12.10",
+    "@babel/eslint-parser": "^7.12.13",
     "@babel/plugin-proposal-object-rest-spread": "^7.12.1",
     "@babel/plugin-transform-react-jsx": "^7.12.12",
     "@babel/plugin-transform-runtime": "^7.12.10",
@@ -49,9 +52,15 @@
     "axios-mock-adapter": "^1.19.0",
     "babel-loader": "^8.2.2",
     "babel-plugin-transform-react-jsx": "^6.24.1",
+    "eslint": "^7.19.0",
+    "eslint-config-prettier": "^7.2.0",
+    "eslint-plugin-prettier": "^3.3.1",
+    "eslint-plugin-react": "^7.22.0",
+    "eslint-plugin-react-hooks": "^4.2.0",
     "html-webpack-plugin": "^4.5.1",
     "jest": "^26.6.3",
     "nanoid": "^3.1.20",
+    "prettier": "^2.2.1",
     "react": "^17.0.1",
     "react-dom": "^17.0.1",
     "webpack": "^5.18.0",
