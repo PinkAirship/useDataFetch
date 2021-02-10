@@ -1,4 +1,4 @@
-import { useContext } from 'react'
+import { useContext, useMemo } from 'react'
 import { DataFetchContext } from './data-fetch-provider'
 
 export function useDataFetch(
@@ -67,25 +67,54 @@ export function useDataFetch(
       .catch((error) => error)
   }
 
-  const get = (data, useCache, methodRequestConfig) =>
-    makeRequest('get', data, useCache, methodRequestConfig)
-  const post = (data, useCache, methodRequestConfig) =>
-    makeRequest('post', data, useCache, methodRequestConfig)
-  const put = (data, useCache, methodRequestConfig) =>
-    makeRequest('put', data, useCache, methodRequestConfig)
-  const patch = (data, useCache, methodRequestConfig) =>
-    makeRequest('patch', data, useCache, methodRequestConfig)
-  const destroy = (data, useCache, methodRequestConfig) =>
-    makeRequest('delete', data, useCache, methodRequestConfig)
-  const request = (data, useCache, methodRequestConfig) => {
-    if (!requestConfig.url) {
-      throw 'Request must have url set.'
-    }
-    if (!requestConfig.method) {
-      throw 'Request must have a method set.'
-    }
-    return makeRequest('request', data, useCache, methodRequestConfig)
-  }
+  const get = useMemo(
+    () => (data, useCache, methodRequestConfig) =>
+      makeRequest('get', data, useCache, methodRequestConfig),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    []
+  )
+  const post = useMemo(
+    () => (data, useCache, methodRequestConfig) =>
+      makeRequest('post', data, useCache, methodRequestConfig),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    []
+  )
+  const put = useMemo(
+    () => (data, useCache, methodRequestConfig) =>
+      makeRequest('put', data, useCache, methodRequestConfig),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    []
+  )
+  const patch = useMemo(
+    () => (data, useCache, methodRequestConfig) =>
+      makeRequest('patch', data, useCache, methodRequestConfig),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    []
+  )
+  const destroy = useMemo(
+    () => (data, useCache, methodRequestConfig) =>
+      makeRequest('delete', data, useCache, methodRequestConfig),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    []
+  )
+  const request = useMemo(
+    () => (data, useCache, methodRequestConfig) => {
+      if (!requestConfig.url) {
+        throw 'Request must have url set.'
+      }
+      if (!requestConfig.method) {
+        throw 'Request must have a method set.'
+      }
+      return makeRequest(
+        'request',
+        data,
+        useCache,
+        methodRequestConfig
+      )
+    },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    []
+  )
 
   return {
     get,
