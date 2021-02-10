@@ -157,12 +157,20 @@ export function MakeGetWithData({
   )
 }
 
+let getFunction
 // Storing the data works with all other data fetch methods
 export function MakeStoredGetFetch() {
   const [ids, setIds] = useState([])
   const { get } = useDataFetch('/randomId', {
     addData: ({ data: id }) => setIds([...ids, id]),
   })
+
+  if (getFunction == get) {
+    console.log('same get')
+  } else {
+    getFunction = get
+    console.log('different get')
+  }
 
   return (
     <div>
