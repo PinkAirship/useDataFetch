@@ -13,6 +13,7 @@ import {
   MakeStoredGetFetch,
   MakeCustomOverwriteData,
   MakeGetWithData,
+  MakeGetWithParams,
 } from '../example/App'
 
 it('renders a Make Get Button', async () => {
@@ -29,6 +30,19 @@ it('returns successfully on Make Get', async () => {
     expect(show.mock.calls[0][0].data).toHaveProperty(
       'user.id',
       'my-id'
+    )
+  })
+})
+
+it('returns successfully on Make Get with Params', async () => {
+  const show = jest.fn()
+  const { findByText } = render(<MakeGetWithParams show={show} />)
+  const button = await findByText(/Make Get with Params/)
+  button.click()
+  await waitFor(() => {
+    expect(show.mock.calls[0][0].data.config.params).toHaveProperty(
+      'id',
+      '1234'
     )
   })
 })

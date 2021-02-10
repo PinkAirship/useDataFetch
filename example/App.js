@@ -14,7 +14,7 @@ export function makeMockAxios(axiosInstance) {
     return [200, { id: nanoid() }]
   })
   mock.onGet('/getWithData').reply(function (config) {
-    return [200, { message: config.data }]
+    return [200, { message: config.data, config }]
   })
   mock.onPost('/message').reply(function (config) {
     return [200, { message: config.data }]
@@ -38,6 +38,7 @@ export default function App() {
     >
       <div>
         <MakeGet />
+        <MakeGetWithParams />
         <MakeRandomGet />
         <MakeGetWithData />
         <MakeMethodDefinedCachedGet />
@@ -66,6 +67,26 @@ export function MakeGet({
         type="button"
         onClick={() => get().then(show)}
         value="Make Get"
+      />
+    </div>
+  )
+}
+
+export function MakeGetWithParams({
+  show = ({ data }) => alert(`User Id: ${data.config.params.id}`),
+}) {
+  const { get } = useDataFetch('/getWithData')
+
+  return (
+    <div>
+      <input
+        type="button"
+        onClick={() =>
+          get(undefined, undefined, { params: { id: '1234' } }).then(
+            show
+          )
+        }
+        value="Make Get with Params"
       />
     </div>
   )

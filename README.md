@@ -305,21 +305,99 @@ function MakeGet() {
 
 #### useDataFetch methods
 
-useDataFetch will return an object with functions ready to make your api requests. Note that `bool` represents a boolean value and is used to toggle the caching behavior.
+`useDataFetch` will return an object with functions ready to make your api requests. Note that `bool` represents a boolean value and is used to toggle the caching behavior.
 
-`get` - make a get request `get(undefined, bool)`. Unlike axios, this does accept a data body `get(data, bool)`. Note that `undefined` must be passed in to use the cache without passing data.
+`requestConfig` is used to send any last minute configuration, such as dymanically generated query params - `{ params: { id: '1234' } }`.
 
-`post` - make a post request `post(data, bool)`.
+Available methods that `useDataFetch` will generate are:
 
-`put` - make a put request `put(data, bool)`.
+`get` - make a get request `get()`. Unlike axios, this does accept a data body `get(data, bool)`. Note that `undefined` must be passed in to use the cache without passing data. To send query params: `get(udefined, undefined, requestConfig)`.
 
-`patch` - make a patch request `patch(data, bool)`.
+`post` - make a post request `post(data, bool, requestConfig)`.
 
-`destroy` - make a delete request `destroy(data, bool)`.
+`put` - make a put request `put(data, bool, requestConfig)`.
 
-`request` - make a custom request `request(data, bool)`. Note that this requires that you create a request config in your useDataFetch hook setup: `useDataFetch(undefined, { requestConfig: <dataobject>})`. undefined (or some value) must be passed in first or else the requestConfig will not be registered and it will throw an error. For more infomration the axios request config, see [https://github.com/axios/axios#request-config](https://github.com/axios/axios#request-config). You must include a url and a method in the requestConfig or an error will be thrown.
+`patch` - make a patch request `patch(data, bool, requestConfig)`.
+
+`destroy` - make a delete request `destroy(data, bool, requestConfig)`.
+
+`request` - make a custom request `request(data, bool, requestConfig)`. Note that this requires that you create a request config in your useDataFetch hook setup: `useDataFetch(undefined, { requestConfig: <dataobject>})`. undefined (or some value) must be passed in first or else the requestConfig will not be registered and it will throw an error. For more infomration the axios request config, see [https://github.com/axios/axios#request-config](https://github.com/axios/axios#request-config). You must include a url and a method in the requestConfig or an error will be thrown.
 
 All of these methods return an axios request promise if you do not replace the http library with something else. This allows you control to chain after a request.
+
+## Testing Your Application with useDataFetch
+
+For the most part testing your application while using `useDataFetch` should be pretty straightforward - wrap whatever component you are using `useDataFetch` with a `DataFetchProvider` instance.
+
+```jsx
+function makeMockAxios = () => {... creates a mock axios instance ...}
+
+function renderComponent(children) {
+  return render( // some render function for your testing library
+    <DataFetchProvider makeMockDataFetchInstance={makeMockAxios}>
+      {children}
+    </DataFetchProvider>
+  )
+}
+
+test('my test', () => {
+  const component = renderComponent(<MyComponent />)
+  ... your test
+})
+```
+
+You can check out examples of testing in the `__tests__` folder for more information.
+
+### Spying Data Fetching
+
+Sometimes you want to verify that a component makes a call with the correct data to your provider. This can be difficult with [https://github.com/ctimmerm/axios-mock-adapter](https://github.com/ctimmerm/axios-mock-adapter) (the recommended mock library for axios).
+
+In order to spy on a request, one approach is to create a mock that accepts a spy as the `dataFetchInstance` of the `DataFetchProvider`.
+
+```jsx
+function renderComponent(children, dataFetchProps = {}) {
+  return render( // some render function for your testing library
+    <DataFetchProvider {...dataFetchProps}>
+      {children}
+    </DataFetchProvider>
+  )
+}
+
+test('creates a new thing', async () => {
+  let data
+  const dataFetchInstance = (requestData) => {
+    data = requestData
+    return Promise.resolve({ data: { message: { id: 1 } } })
+  }
+  const component = renderComponent(<MyComponent />, { dataFetchInstance })
+  ... your test
+})
+```
+
+By creating a data function that accepts the requestData normally passed into axios that in turn returns a promise, you match the api of axios. The `data` variable can be set to the requestData and you can assert on the data being sent by any component using `useDataFetch`.
+
+Note that in this instance it assumes that your components will only make a single call. To capture the output of multiple calls, do the following:
+
+```jsx
+test('creates a new thing', async () => {
+  const data = []
+  const dataFetchInstance = (requestData) => {
+    data.push(requestData)
+    return Promise.resolve({ data: { message: { id: 1 } } })
+  }
+  const component = renderComponent(<MyComponent />, { dataFetchInstance })
+  ... your test
+  expect(data[0]).toEqual(..somedata)
+  expect(data[1]).toEqual(..somedifferentData)
+})
+```
+
+In a non-deterministic scenario (where it is unclear which order the calls will be made), it is recommended to filter for each call in the data array to perform your search (such as by the path of the data sent by axios):
+
+```jsx
+const firstExpectedCall = data.find((d) => d.url == 'expected/1')
+const secondExpectedCall = data.find((d) => d.url == 'expected/2')
+```
 
 ## Development
 

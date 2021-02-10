@@ -22,7 +22,12 @@ export function useDataFetch(
     useCache: contextUseCache,
   } = useContext(DataFetchContext)
 
-  function makeRequest(method, data, methodUseCache) {
+  function makeRequest(
+    method,
+    data,
+    methodUseCache,
+    methodRequestConfig = {}
+  ) {
     // Order of precedence: method use - method defined - context defined
     let computedUseCache =
       typeof useCache != 'undefined' ? useCache : contextUseCache
@@ -44,6 +49,7 @@ export function useDataFetch(
       url: path,
       ...requestConfig,
       ...requestData,
+      ...methodRequestConfig,
     })
       .then((requestData) => {
         if (computedUseCache) cache.set(path, requestData)
@@ -61,21 +67,24 @@ export function useDataFetch(
       .catch((error) => error)
   }
 
-  const get = (data, useCache) => makeRequest('get', data, useCache)
-  const post = (data, useCache) => makeRequest('post', data, useCache)
-  const put = (data, useCache) => makeRequest('put', data, useCache)
-  const patch = (data, useCache) =>
-    makeRequest('patch', data, useCache)
-  const destroy = (data, useCache) =>
-    makeRequest('delete', data, useCache)
-  const request = (data, useCache) => {
+  const get = (data, useCache, methodRequestConfig) =>
+    makeRequest('get', data, useCache, methodRequestConfig)
+  const post = (data, useCache, methodRequestConfig) =>
+    makeRequest('post', data, useCache, methodRequestConfig)
+  const put = (data, useCache, methodRequestConfig) =>
+    makeRequest('put', data, useCache, methodRequestConfig)
+  const patch = (data, useCache, methodRequestConfig) =>
+    makeRequest('patch', data, useCache, methodRequestConfig)
+  const destroy = (data, useCache, methodRequestConfig) =>
+    makeRequest('delete', data, useCache, methodRequestConfig)
+  const request = (data, useCache, methodRequestConfig) => {
     if (!requestConfig.url) {
       throw 'Request must have url set.'
     }
     if (!requestConfig.method) {
       throw 'Request must have a method set.'
     }
-    return makeRequest('request', data, useCache)
+    return makeRequest('request', data, useCache, methodRequestConfig)
   }
 
   return {
