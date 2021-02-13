@@ -9,13 +9,13 @@ export function useDataFetch(
   {
     addData: addData,
     alertScreenReaderWith: alertScreenReaderWith,
-    requestConfig: requestConfig,
-    useCache: useCache,
+    requestConfig: hookRequestConfig,
+    useCache: hookUseCache,
   } = {
     addData: noop,
     alertScreenReaderWith,
-    requestConfig: {},
-    useCache: undefined,
+    hookRequestConfig: {},
+    hookUseCache: undefined,
   }
 ) {
   const {
@@ -28,16 +28,25 @@ export function useDataFetch(
   function makeRequest(
     method,
     data,
-    methodUseCache,
-    methodRequestConfig = {}
+    { methodUseCache, methodRequestConfig: methodRequestConfig } = {
+      methodRequestConfig: {},
+    }
   ) {
     // Order of precedence: method use - method defined - context defined
     let computedUseCache =
-      typeof useCache != 'undefined' ? useCache : contextUseCache
+      typeof hookUseCache != 'undefined'
+        ? hookUseCache
+        : contextUseCache
     computedUseCache =
       typeof methodUseCache != 'undefined'
         ? methodUseCache
         : computedUseCache
+    console.log(
+      computedUseCache,
+      contextUseCache,
+      hookUseCache,
+      methodUseCache
+    )
 
     if (computedUseCache) {
       const cachedValue = cache.get(path)
@@ -50,70 +59,84 @@ export function useDataFetch(
     return dataFetchInstance({
       method,
       url: path,
-      ...requestConfig,
+      ...hookRequestConfig,
       ...requestData,
       ...methodRequestConfig,
     })
-      .then((requestData) => {
-        if (computedUseCache) cache.set(path, requestData)
-        return requestData
+      .then((responseData) => {
+        if (computedUseCache) cache.set(path, responseData)
+        return responseData
       })
-      .then((requestData) => {
-        if (addData) addData(requestData)
-        return requestData
+      .then((responseData) => {
+        if (addData) addData(responseData)
+        return responseData
       })
-      .then((requestData) => {
+      .then((responseData) => {
         if (alertScreenReaderWith)
           screenReaderAlert(alertScreenReaderWith)
-        return requestData
+        return responseData
       })
       .catch((error) => error)
   }
 
   const get = useMemo(
-    () => (data, useCache, methodRequestConfig) =>
-      makeRequest('get', data, useCache, methodRequestConfig),
+    () => (data, { useCache, requestConfig } = {}) =>
+      makeRequest('get', data, {
+        methodUseCache: useCache,
+        methodRequestConfig: requestConfig,
+      }),
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [addData]
   )
   const post = useMemo(
-    () => (data, useCache, methodRequestConfig) =>
-      makeRequest('post', data, useCache, methodRequestConfig),
+    () => (data, { useCache, requestConfig } = {}) =>
+      makeRequest('post', data, {
+        methodUseCache: useCache,
+        methodRequestConfig: requestConfig,
+      }),
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [addData]
   )
   const put = useMemo(
-    () => (data, useCache, methodRequestConfig) =>
-      makeRequest('put', data, useCache, methodRequestConfig),
+    () => (data, { useCache, requestConfig } = {}) =>
+      makeRequest('put', data, {
+        methodUseCache: useCache,
+        methodRequestConfig: requestConfig,
+      }),
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [addData]
   )
   const patch = useMemo(
-    () => (data, useCache, methodRequestConfig) =>
-      makeRequest('patch', data, useCache, methodRequestConfig),
+    () => (data, { useCache, requestConfig } = {}) =>
+      makeRequest('patch', data, {
+        methodUseCache: useCache,
+        methodRequestConfig: requestConfig,
+      }),
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [addData]
   )
   const destroy = useMemo(
-    () => (data, useCache, methodRequestConfig) =>
-      makeRequest('delete', data, useCache, methodRequestConfig),
+    () => (data, { useCache, requestConfig } = {}) =>
+      makeRequest('delete', data, {
+        methodUseCache: useCache,
+        methodRequestConfig: requestConfig,
+      }),
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [addData]
   )
   const request = useMemo(
-    () => (data, useCache, methodRequestConfig) => {
-      if (!requestConfig.url) {
+    () => (data, { useCache, requestConfig } = {}) => {
+      const mergedConfig = { ...hookRequestConfig, ...requestConfig }
+      if (!hookRequestConfig.url) {
         throw 'Request must have url set.'
       }
-      if (!requestConfig.method) {
+      if (!hookRequestConfig.method) {
         throw 'Request must have a method set.'
       }
-      return makeRequest(
-        'request',
-        data,
-        useCache,
-        methodRequestConfig
-      )
+      return makeRequest('request', data, {
+        methodUseCache: useCache,
+        methodRequestConfig: mergedConfig,
+      })
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [addData]

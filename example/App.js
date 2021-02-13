@@ -82,9 +82,9 @@ export function MakeGetWithParams({
       <input
         type="button"
         onClick={() =>
-          get(undefined, undefined, { params: { id: '1234' } }).then(
-            show
-          )
+          get(undefined, {
+            requestConfig: { params: { id: '1234' } },
+          }).then(show)
         }
         value="Make Get with Params"
       />
@@ -128,13 +128,13 @@ export function MakeMethodDefinedCachedGet({
 export function MakeCallDefinedCachedGet({
   show = ({ data: { id: id } }) => alert(`User Id: ${id}`),
 }) {
-  const { get } = useDataFetch('/randomId', false)
+  const { get } = useDataFetch('/randomId', { useCache: false })
 
   return (
     <div>
       <input
         type="button"
-        onClick={() => get(undefined, true).then(show)}
+        onClick={() => get(undefined, { useCache: true }).then(show)}
         value="Make Cached Get - Called"
       />
     </div>
@@ -368,7 +368,7 @@ export function MakeCallDefinedCachedGetFalse({
     <div>
       <input
         type="button"
-        onClick={() => get(undefined, false).then(show)}
+        onClick={() => get(undefined, { useCache: false }).then(show)}
         value="Make Cached Get - Called - Override Cache Behavior"
       />
     </div>
