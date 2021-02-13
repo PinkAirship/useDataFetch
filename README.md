@@ -171,12 +171,15 @@ To store fetched data you will need to pass a configuration object to `useDataFe
 function MakeStoredGetFetch() {
   // set state on the component using useDataFetch
   const [ids, setIds] = useState([])
-  const { get } = useDataFetch(
-    '/randomId',
+  // to prevent refetching data on each rerender, you must wrap the
+  // the state update in a useCallback hook
+  const addData = useCallback(
     // make sure to wrap the set state function in something that
     // will be called after the data is retrieved
-    { addData: ({ data: id }) => setIds([...ids, id]) }
+    ({ data: id }) => setIds([...ids, id]),
+    [ids]
   )
+  const { get } = useDataFetch('/randomId', { addData })
 
   return (
     <div>

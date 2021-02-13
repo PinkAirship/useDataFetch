@@ -1,6 +1,9 @@
 import { useContext, useMemo } from 'react'
 import { DataFetchContext } from './data-fetch-provider'
 
+// stable function signature for equality checks when addData is not defined
+function noop() {}
+
 export function useDataFetch(
   path,
   {
@@ -9,7 +12,7 @@ export function useDataFetch(
     requestConfig: requestConfig,
     useCache: useCache,
   } = {
-    addData: () => {},
+    addData: noop,
     alertScreenReaderWith,
     requestConfig: {},
     useCache: undefined,
@@ -71,31 +74,31 @@ export function useDataFetch(
     () => (data, useCache, methodRequestConfig) =>
       makeRequest('get', data, useCache, methodRequestConfig),
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    []
+    [addData]
   )
   const post = useMemo(
     () => (data, useCache, methodRequestConfig) =>
       makeRequest('post', data, useCache, methodRequestConfig),
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    []
+    [addData]
   )
   const put = useMemo(
     () => (data, useCache, methodRequestConfig) =>
       makeRequest('put', data, useCache, methodRequestConfig),
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    []
+    [addData]
   )
   const patch = useMemo(
     () => (data, useCache, methodRequestConfig) =>
       makeRequest('patch', data, useCache, methodRequestConfig),
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    []
+    [addData]
   )
   const destroy = useMemo(
     () => (data, useCache, methodRequestConfig) =>
       makeRequest('delete', data, useCache, methodRequestConfig),
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    []
+    [addData]
   )
   const request = useMemo(
     () => (data, useCache, methodRequestConfig) => {
@@ -113,7 +116,7 @@ export function useDataFetch(
       )
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    []
+    [addData]
   )
 
   return {

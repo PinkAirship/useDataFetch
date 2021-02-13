@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useCallback, useState } from 'react'
 import MockAdapter from 'axios-mock-adapter'
 
 import { DataFetchProvider, useDataFetch } from '../src'
@@ -161,8 +161,13 @@ let getFunction
 // Storing the data works with all other data fetch methods
 export function MakeStoredGetFetch() {
   const [ids, setIds] = useState([])
+  const [, triggerRerender] = useState()
+  const addData = useCallback(
+    ({ data: id }) => setIds([...ids, id]),
+    [ids]
+  )
   const { get } = useDataFetch('/randomId', {
-    addData: ({ data: id }) => setIds([...ids, id]),
+    addData,
   })
 
   if (getFunction == get) {
@@ -178,6 +183,11 @@ export function MakeStoredGetFetch() {
         type="button"
         onClick={() => get()}
         value="Make Stored Get"
+      />
+      <input
+        type="button"
+        onClick={triggerRerender}
+        value="Stable Callback - Check Console for output"
       />
       {ids.map((id) => (
         <div key={id.id}>Created id: {id.id}</div>
