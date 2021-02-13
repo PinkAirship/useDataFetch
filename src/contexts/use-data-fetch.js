@@ -1,18 +1,18 @@
 import { useContext, useMemo } from 'react'
 import { DataFetchContext } from './data-fetch-provider'
 
-// stable function signature for equality checks when addData is not defined
+// stable function signature for equality checks when updateStateHook is not defined
 function noop() {}
 
 export function useDataFetch(
   path,
   {
-    addData: addData,
+    updateStateHook: hookUpdateStateHook,
     alertScreenReaderWith: alertScreenReaderWith,
     requestConfig: hookRequestConfig,
     useCache: hookUseCache,
   } = {
-    addData: noop,
+    hookUpdateStateHook: noop,
     alertScreenReaderWith,
     hookRequestConfig: {},
     hookUseCache: undefined,
@@ -23,7 +23,12 @@ export function useDataFetch(
     screenReaderAlert,
     cache,
     useCache: contextUseCache,
+    updateStateHook: providerUpdateStateHook,
   } = useContext(DataFetchContext)
+  const updateStateHook =
+    typeof hookUpdateStateHook != 'undefined'
+      ? hookUpdateStateHook
+      : providerUpdateStateHook
 
   function makeRequest(
     method,
@@ -41,12 +46,6 @@ export function useDataFetch(
       typeof methodUseCache != 'undefined'
         ? methodUseCache
         : computedUseCache
-    console.log(
-      computedUseCache,
-      contextUseCache,
-      hookUseCache,
-      methodUseCache
-    )
 
     if (computedUseCache) {
       const cachedValue = cache.get(path)
@@ -54,21 +53,25 @@ export function useDataFetch(
         return Promise.resolve(cachedValue)
       }
     }
+    console.log(data)
     // don't overwrite data from requestConfig unless it is present.
     const requestData = data ? { data } : {}
-    return dataFetchInstance({
+    console.log(requestData, methodRequestConfig)
+    const finalRequestConfg = {
       method,
       url: path,
       ...hookRequestConfig,
-      ...requestData,
       ...methodRequestConfig,
-    })
+      ...requestData,
+    }
+    return dataFetchInstance(finalRequestConfg)
       .then((responseData) => {
         if (computedUseCache) cache.set(path, responseData)
         return responseData
       })
       .then((responseData) => {
-        if (addData) addData(responseData)
+        if (updateStateHook)
+          updateStateHook(responseData, finalRequestConfg)
         return responseData
       })
       .then((responseData) => {
@@ -86,7 +89,7 @@ export function useDataFetch(
         methodRequestConfig: requestConfig,
       }),
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [addData]
+    [updateStateHook]
   )
   const post = useMemo(
     () => (data, { useCache, requestConfig } = {}) =>
@@ -95,7 +98,7 @@ export function useDataFetch(
         methodRequestConfig: requestConfig,
       }),
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [addData]
+    [updateStateHook]
   )
   const put = useMemo(
     () => (data, { useCache, requestConfig } = {}) =>
@@ -104,7 +107,7 @@ export function useDataFetch(
         methodRequestConfig: requestConfig,
       }),
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [addData]
+    [updateStateHook]
   )
   const patch = useMemo(
     () => (data, { useCache, requestConfig } = {}) =>
@@ -113,7 +116,7 @@ export function useDataFetch(
         methodRequestConfig: requestConfig,
       }),
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [addData]
+    [updateStateHook]
   )
   const destroy = useMemo(
     () => (data, { useCache, requestConfig } = {}) =>
@@ -122,7 +125,7 @@ export function useDataFetch(
         methodRequestConfig: requestConfig,
       }),
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [addData]
+    [updateStateHook]
   )
   const request = useMemo(
     () => (data, { useCache, requestConfig } = {}) => {
@@ -139,7 +142,7 @@ export function useDataFetch(
       })
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [addData]
+    [updateStateHook]
   )
 
   return {

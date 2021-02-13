@@ -173,13 +173,13 @@ function MakeStoredGetFetch() {
   const [ids, setIds] = useState([])
   // to prevent refetching data on each rerender, you must wrap the
   // the state update in a useCallback hook
-  const addData = useCallback(
+  const updateStateHook = useCallback(
     // make sure to wrap the set state function in something that
     // will be called after the data is retrieved
     ({ data: id }) => setIds([...ids, id]),
     [ids]
   )
-  const { get } = useDataFetch('/randomId', { addData })
+  const { get } = useDataFetch('/randomId', { updateStateHook })
 
   return (
     <div>
@@ -247,6 +247,8 @@ function App() {
 
 `cacheSize` - Set the number of items to keep track of before ejecting values from the cache. Defaults to 50. Cache is a last-recently-used cache.
 
+`updateStateHook` - A function that updates the state you wish to house your fetched data. This function will be passed the responseData and the requestConfig - `(responseData, requestConfig) => {}`. See the `<AppThird>` component in `example/App.js` for example of how it can be used. This hook is overridden if `useDataFetch` also defines `updateStateHook`.
+
 ### useDataFetch
 
 To use the useDataFetch hook, do the following:
@@ -301,32 +303,38 @@ function MakeGet() {
 
 `config` - An object that accpets specific values.
 
-- `addData` - A function that updates the state you wish to house your fetched data
+- `updateStateHook` - A function that updates the state you wish to house your fetched data. This will override the `DataFetchProvider` if it has defined the `updateStateHook`.
 - `alertsScreenReaderWith` - A message for the screenReaderAlert to read (see [https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/ARIA_Live_Regions](https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/ARIA_Live_Regions) for more information).
 - `requestConfig` - An axios request configuration object (see [https://github.com/axios/axios#request-config](https://github.com/axios/axios#request-config) for more information on the axios api).
 - `useCache` - Use the cache for all calls returned. Overrides the cache settings for the provider. Can be overridden by at the level that the call is made.
 
 #### useDataFetch methods
 
-`useDataFetch` will return an object with functions ready to make your api requests. Note that `bool` represents a boolean value and is used to toggle the caching behavior.
-
-`requestConfig` is used to send any last minute configuration, such as dymanically generated query params - `{ params: { id: '1234' } }`.
+`useDataFetch` will return an object with functions ready to make your api requests.
 
 Available methods that `useDataFetch` will generate are:
 
-`get` - make a get request `get()`. Unlike axios, this does accept a data body `get(data, bool)`. Note that `undefined` must be passed in to use the cache without passing data. To send query params: `get(udefined, undefined, requestConfig)`.
+`get` - make a get request `get()`. Unlike axios, this does accept a data body `get(data, opts = {})`. Note that `undefined` must be passed in to use the requestConfig without passing in data. To send query params: `get(undefined, { params: {}})`.
 
-`post` - make a post request `post(data, bool, requestConfig)`.
+`post` - make a post request `post(data, opts = {})`.
 
-`put` - make a put request `put(data, bool, requestConfig)`.
+`put` - make a put request `put(data, opts = {})`.
 
-`patch` - make a patch request `patch(data, bool, requestConfig)`.
+`patch` - make a patch request `patch(data, opts = {})`.
 
-`destroy` - make a delete request `destroy(data, bool, requestConfig)`.
+`destroy` - make a delete request `destroy(data, opts = {})`.
 
-`request` - make a custom request `request(data, bool, requestConfig)`. Note that this requires that you create a request config in your useDataFetch hook setup: `useDataFetch(undefined, { requestConfig: <dataobject>})`. undefined (or some value) must be passed in first or else the requestConfig will not be registered and it will throw an error. For more infomration the axios request config, see [https://github.com/axios/axios#request-config](https://github.com/axios/axios#request-config). You must include a url and a method in the requestConfig or an error will be thrown.
+`request` - make a custom request `request(data, opts = {})`. Note that this requires that you create a request config in your useDataFetch hook setup: `useDataFetch(undefined, { requestConfig: <dataobject>})`. undefined (or some value) must be passed in first or else the requestConfig will not be registered and it will throw an error. For more infomration the axios request config, see [https://github.com/axios/axios#request-config](https://github.com/axios/axios#request-config). You must include a url and a method in the requestConfig or an error will be thrown.
 
 All of these methods return an axios request promise if you do not replace the http library with something else. This allows you control to chain after a request.
+
+##### Request Level Options
+
+The request level allows you to dynamically change a few of the options by defining behavior on the fly. These options override similar options defined at the hook level or the provider level.
+
+`useCache` - Use the cache for all calls returned
+
+`requestConfig` is used to send any last minute configuration, such as dymanically generated query params - `{ params: { id: '1234' } }`.
 
 ## Testing Your Application with useDataFetch
 
@@ -424,6 +432,14 @@ To run tests:
 ```
 npm run test
 ```
+
+## Contributing
+
+- Keep it respectful
+- Search issues for possible known issues (and help resolve them :))
+- Always add some form of test (see Testing) to any pull requests (or make a case for why the change is already covered)
+- Always update README.md with any new features/changes to behavior or usage.
+- Update CHANGELOG.md with each pull request (unless it makes sense not to)
 
 ## Troubleshooting
 

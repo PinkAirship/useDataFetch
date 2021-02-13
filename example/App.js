@@ -162,12 +162,12 @@ let getFunction
 export function MakeStoredGetFetch() {
   const [ids, setIds] = useState([])
   const [, triggerRerender] = useState()
-  const addData = useCallback(
+  const updateStateHook = useCallback(
     ({ data: id }) => setIds([...ids, id]),
     [ids]
   )
   const { get } = useDataFetch('/randomId', {
-    addData,
+    updateStateHook,
   })
 
   if (getFunction == get) {
@@ -321,7 +321,7 @@ export function MakeCustomOverwriteData({
       <input
         type="button"
         onClick={() => request('overwritten data').then(show)}
-        value="Make Custom Call"
+        value="Make Custom Call - Override Data"
       />
     </div>
   )
@@ -371,6 +371,62 @@ export function MakeCallDefinedCachedGetFalse({
         onClick={() => get(undefined, { useCache: false }).then(show)}
         value="Make Cached Get - Called - Override Cache Behavior"
       />
+    </div>
+  )
+}
+
+export function AppThird() {
+  const [storedData, setStoredData] = useState([])
+  const updateHook = useCallback(
+    ({ data }, other) => {
+      setStoredData([...storedData, data])
+      console.log(other)
+    },
+    [storedData]
+  )
+  return (
+    <DataFetchProvider
+      screenReaderAlert={(message) => console.log(message)}
+      makeMockDataFetchInstance={makeMockAxios}
+      updateStateHook={updateHook}
+    >
+      <div>
+        <MakeRandomGet
+          buttonText="Make Random Get - Provider State Updater"
+          show={() => {}}
+        />
+        <MakeStoredGetFetchOverrideFromOnProvider />
+        <div>
+          {storedData.map((message) => (
+            <div key={message.id}>Created id: {message.id}</div>
+          ))}
+        </div>
+      </div>
+    </DataFetchProvider>
+  )
+}
+
+// Storing the data works with all other data fetch methods
+export function MakeStoredGetFetchOverrideFromOnProvider() {
+  const [ids, setIds] = useState([])
+  const updateStateHook = useCallback(
+    ({ data: id }) => setIds([...ids, id]),
+    [ids]
+  )
+  const { get } = useDataFetch('/randomId', {
+    updateStateHook,
+  })
+
+  return (
+    <div>
+      <input
+        type="button"
+        onClick={() => get()}
+        value="Make Stored Get - Override Provider Store"
+      />
+      {ids.map((id) => (
+        <div key={id.id}>Hook level - Created id: {id.id}</div>
+      ))}
     </div>
   )
 }

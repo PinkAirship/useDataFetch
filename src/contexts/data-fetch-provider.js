@@ -7,6 +7,9 @@ export const DataFetchContext = React.createContext({
   screenReaderAlert: () => {},
 })
 
+// stable function signature for equality checks when updateStateHook is not defined
+function noop() {}
+
 function setupAxios(axiosCreateOpts) {
   const axiosInstance = axios.create(axiosCreateOpts)
   return axiosInstance
@@ -19,6 +22,7 @@ export function DataFetchProvider({
   makeMockDataFetchInstance = null,
   useCache = false,
   cacheSize = 50,
+  updateStateHook = noop,
 }) {
   if (makeMockDataFetchInstance && dataFetchInstance) {
     throw 'Cannot use `makeMockDataFetchInstance` and `dataFetchInstance` together.'
@@ -38,6 +42,7 @@ export function DataFetchProvider({
     screenReaderAlert,
     cache,
     useCache,
+    updateStateHook,
   }
 
   return (

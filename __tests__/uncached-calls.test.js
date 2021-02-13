@@ -1,5 +1,5 @@
 import React from 'react'
-import { waitFor } from '@testing-library/react'
+import { waitFor, render as baseRender } from '@testing-library/react'
 
 import { render } from './test-utils'
 import {
@@ -14,6 +14,7 @@ import {
   MakeCustomOverwriteData,
   MakeGetWithData,
   MakeGetWithParams,
+  AppThird,
 } from '../example/App'
 
 it('renders a Make Get Button', async () => {
@@ -166,6 +167,16 @@ it('creates divs with ids when clicked for Make Stored Get Fetch', async () => {
   // eslint-disable-next-line jest-dom/prefer-in-document
   expect(createdIdNodes).toHaveLength(0)
   const button = await findByText(/Make Stored Get/)
+  button.click()
+  await findByText(/Created id/)
+})
+
+it('creates divs with ids when clicked for Make Random Get and provider defines stored data', async () => {
+  const { findByText, queryAllByText } = baseRender(<AppThird />)
+  const createdIdNodes = queryAllByText(/Created id/)
+  // eslint-disable-next-line jest-dom/prefer-in-document
+  expect(createdIdNodes).toHaveLength(0)
+  const button = await findByText(/Make Random Get/)
   button.click()
   await findByText(/Created id/)
 })
