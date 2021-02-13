@@ -1,7 +1,7 @@
 import { useContext, useMemo } from 'react'
 import { DataFetchContext } from './data-fetch-provider'
 
-// stable function signature for equality checks when updateStateHook is not defined
+// stable function signature for equality checks
 function noop() {}
 
 export function useDataFetch(
@@ -11,11 +11,12 @@ export function useDataFetch(
     alertScreenReaderWith: alertScreenReaderWith,
     requestConfig: hookRequestConfig,
     useCache: hookUseCache,
+    requestStateListener: hookRequestStateListener,
   } = {
-    hookUpdateStateHook: noop,
     alertScreenReaderWith,
     hookRequestConfig: {},
     hookUseCache: undefined,
+    hookRequestStateListener: noop,
   }
 ) {
   const {
@@ -33,7 +34,11 @@ export function useDataFetch(
   function makeRequest(
     method,
     data,
-    { methodUseCache, methodRequestConfig: methodRequestConfig } = {
+    {
+      methodUseCache,
+      methodRequestConfig: methodRequestConfig,
+      requestStateListener: methodRequestStateListener,
+    } = {
       methodRequestConfig: {},
     }
   ) {
@@ -46,17 +51,20 @@ export function useDataFetch(
       typeof methodUseCache != 'undefined'
         ? methodUseCache
         : computedUseCache
+    const requestStateListener =
+      typeof methodRequestStateListener != 'undefined'
+        ? methodRequestStateListener
+        : hookRequestStateListener || noop
 
     if (computedUseCache) {
       const cachedValue = cache.get(path)
       if (cachedValue) {
+        requestStateListener('success')
         return Promise.resolve(cachedValue)
       }
     }
-    console.log(data)
     // don't overwrite data from requestConfig unless it is present.
     const requestData = data ? { data } : {}
-    console.log(requestData, methodRequestConfig)
     const finalRequestConfg = {
       method,
       url: path,
@@ -64,8 +72,10 @@ export function useDataFetch(
       ...methodRequestConfig,
       ...requestData,
     }
+    requestStateListener('running')
     return dataFetchInstance(finalRequestConfg)
       .then((responseData) => {
+        requestStateListener('success')
         if (computedUseCache) cache.set(path, responseData)
         return responseData
       })
@@ -79,56 +89,82 @@ export function useDataFetch(
           screenReaderAlert(alertScreenReaderWith)
         return responseData
       })
-      .catch((error) => error)
+      .catch((error) => {
+        requestStateListener('error')
+        return error
+      })
   }
 
   const get = useMemo(
-    () => (data, { useCache, requestConfig } = {}) =>
+    () => (
+      data,
+      { useCache, requestConfig, requestStateListener } = {}
+    ) =>
       makeRequest('get', data, {
         methodUseCache: useCache,
         methodRequestConfig: requestConfig,
+        requestStateListener,
       }),
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [updateStateHook]
   )
   const post = useMemo(
-    () => (data, { useCache, requestConfig } = {}) =>
+    () => (
+      data,
+      { useCache, requestConfig, requestStateListener } = {}
+    ) =>
       makeRequest('post', data, {
         methodUseCache: useCache,
         methodRequestConfig: requestConfig,
+        requestStateListener,
       }),
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [updateStateHook]
   )
   const put = useMemo(
-    () => (data, { useCache, requestConfig } = {}) =>
+    () => (
+      data,
+      { useCache, requestConfig, requestStateListener } = {}
+    ) =>
       makeRequest('put', data, {
         methodUseCache: useCache,
         methodRequestConfig: requestConfig,
+        requestStateListener,
       }),
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [updateStateHook]
   )
   const patch = useMemo(
-    () => (data, { useCache, requestConfig } = {}) =>
+    () => (
+      data,
+      { useCache, requestConfig, requestStateListener } = {}
+    ) =>
       makeRequest('patch', data, {
         methodUseCache: useCache,
         methodRequestConfig: requestConfig,
+        requestStateListener,
       }),
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [updateStateHook]
   )
   const destroy = useMemo(
-    () => (data, { useCache, requestConfig } = {}) =>
+    () => (
+      data,
+      { useCache, requestConfig, requestStateListener } = {}
+    ) =>
       makeRequest('delete', data, {
         methodUseCache: useCache,
         methodRequestConfig: requestConfig,
+        requestStateListener,
       }),
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [updateStateHook]
   )
   const request = useMemo(
-    () => (data, { useCache, requestConfig } = {}) => {
+    () => (
+      data,
+      { useCache, requestConfig, requestStateListener } = {}
+    ) => {
       const mergedConfig = { ...hookRequestConfig, ...requestConfig }
       if (!hookRequestConfig.url) {
         throw 'Request must have url set.'
@@ -139,6 +175,7 @@ export function useDataFetch(
       return makeRequest('request', data, {
         methodUseCache: useCache,
         methodRequestConfig: mergedConfig,
+        requestStateListener,
       })
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps

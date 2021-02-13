@@ -15,6 +15,7 @@ import {
   MakeGetWithData,
   MakeGetWithParams,
   AppThird,
+  AppFourth,
 } from '../example/App'
 
 it('renders a Make Get Button', async () => {
@@ -179,4 +180,38 @@ it('creates divs with ids when clicked for Make Random Get and provider defines 
   const button = await findByText(/Make Random Get/)
   button.click()
   await findByText(/Created id/)
+})
+
+it('updates state when loading - success', async () => {
+  const { findByText, findAllByText, queryAllByText } = baseRender(
+    <AppFourth />
+  )
+  const pending = queryAllByText(/Request State/)
+  // eslint-disable-next-line jest-dom/prefer-in-document
+  expect(pending).toHaveLength(2)
+  const button = await findByText(/Make Get - Success/)
+  button.click()
+  const running = await findAllByText(/running/)
+  // eslint-disable-next-line jest-dom/prefer-in-document
+  expect(running).toHaveLength(1)
+  const success = await findAllByText(/success/)
+  // eslint-disable-next-line jest-dom/prefer-in-document
+  expect(success).toHaveLength(1)
+})
+
+it('updates state when loading - error', async () => {
+  const { findByText, findAllByText, queryAllByText } = baseRender(
+    <AppFourth />
+  )
+  const pending = queryAllByText(/Request State/)
+  // eslint-disable-next-line jest-dom/prefer-in-document
+  expect(pending).toHaveLength(2)
+  const button = await findByText(/Make Get - Error/)
+  button.click()
+  const running = await findAllByText(/running/)
+  // eslint-disable-next-line jest-dom/prefer-in-document
+  expect(running).toHaveLength(1)
+  const error = await findAllByText(/error/)
+  // eslint-disable-next-line jest-dom/prefer-in-document
+  expect(error).toHaveLength(1)
 })

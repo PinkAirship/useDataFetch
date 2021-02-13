@@ -6,8 +6,9 @@ Several react hooks exist that allow you to fetch data from a server, but most o
 
 This library is also accessibility friendly, allowing for easy setup to alert screenreaders when data is fetched. For more information on screenreaders, see [https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/ARIA_Live_Regions](https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/ARIA_Live_Regions).
 
-## Table of Contents
+# Table of Contents
 
+- [Table of Contents](#table-of-contents)
 - [Install](#install)
 - [Usage](#usage)
   - [Caching data](#caching-data)
@@ -15,6 +16,7 @@ This library is also accessibility friendly, allowing for easy setup to alert sc
     - [How to Use Cached Calls](#how-to-use-cached-calls)
   - [Storing fetched data in state](#storing-fetched-data-in-state)
   - [Screen Reader Alerts](#screen-reader-alerts)
+  - [Listening for Request State Changes](#listening-for-request-state-changes)
 - [API](#api)
   - [Definitions](#definitions)
   - [DataFetchProvider](#datafetchprovider)
@@ -243,6 +245,32 @@ function MakeGetWithSrAlert() {
 }
 ```
 
+### Listening for Request State Changes
+
+Many libraries will provide mechanisms to automatically detect the state that the request is in - retrieving data, was it a success, was it a failure. These state changes are useful to control the ui when fetching data.
+
+You can listen to the request lifecycle of `useDataFetch` by defining the `requestStateListener` function at either the hook level or the request level. These functions will pass a string only that defines the state (one of `running`|`success`(for success)|`error`(for error)).
+
+```jsx
+function MakeGet() {
+  const [loading, setLoading] = useState('pending')
+  const { get } = useDataFetch('/userinfo', {
+    requestStateListener: setLoading,
+  })
+
+  return (
+    <div>
+      <input
+        type="button"
+        onClick={() => get()}
+        value="Make Get - Success"
+      />
+      <div>Request State: {loading}</div>
+    </div>
+  )
+}
+```
+
 ## API
 
 The api for useDataFetch is pretty small intentionally - it isn't supposed to handle all use cases. If you want something that does more state management or handles automatic retries and caching behavior, this library may not be for you.
@@ -340,6 +368,7 @@ function MakeGet() {
 - `alertsScreenReaderWith` - A message for the screenReaderAlert to read (see [https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/ARIA_Live_Regions](https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/ARIA_Live_Regions) for more information).
 - `requestConfig` - An axios request configuration object (see [https://github.com/axios/axios#request-config](https://github.com/axios/axios#request-config) for more information on the axios api).
 - `useCache` - Use the cache for all calls returned. Overrides the cache settings for the provider. Can be overridden by at the level that the call is made.
+- `requestStateListener` - Listen for the state changes in the request object. This is a function that recieves a string dictating the state (one of `running`|`success`(for success)|`error`(for error)). Can be overridden at the request level.
 
 #### useDataFetch methods
 
@@ -368,6 +397,8 @@ The request level allows you to dynamically change a few of the options by defin
 `useCache` - Use the cache for all calls returned
 
 `requestConfig` is used to send any last minute configuration, such as dymanically generated query params - `{ params: { id: '1234' } }`.
+
+`requestStateListener` - Listen for the state changes in the request object. This is a function that recieves a string dictating the state (one of `running`|`success`(for success)|`error`(for error)).
 
 ## Testing Your Application with useDataFetch
 

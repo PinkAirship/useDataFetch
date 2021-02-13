@@ -7,6 +7,11 @@ import { nanoid } from 'nanoid'
 export function makeMockAxios(axiosInstance) {
   const mock = new MockAdapter(axiosInstance)
 
+  // We want a slow return function
+  mock.onGet('/userinfo/slow').reply(async function () {
+    await setTimeout()
+    return [200, { id: nanoid() }]
+  })
   mock.onGet('/userinfo').reply(200, { user: { id: 'my-id' } })
   // We want a different id each time this endpoint is called, so make it
   // a function
@@ -27,6 +32,15 @@ export function makeMockAxios(axiosInstance) {
   })
   mock.onDelete('/remove').reply(function (config) {
     return [200, { message: config.data }]
+  })
+}
+
+export function makeDelayedMockAxios(axiosInstance) {
+  const mock = new MockAdapter(axiosInstance, { delayResponse: 500 })
+
+  // We want a slow return function
+  mock.onGet('/userinfo').reply(function () {
+    return [200, { id: nanoid() }]
   })
 }
 
@@ -427,6 +441,54 @@ export function MakeStoredGetFetchOverrideFromOnProvider() {
       {ids.map((id) => (
         <div key={id.id}>Hook level - Created id: {id.id}</div>
       ))}
+    </div>
+  )
+}
+
+export function AppFourth() {
+  return (
+    <DataFetchProvider
+      screenReaderAlert={(message) => console.log(message)}
+      makeMockDataFetchInstance={makeDelayedMockAxios}
+    >
+      <MakeDelayedGet show={() => {}} />
+      <MakeErroredDelayedGet />
+    </DataFetchProvider>
+  )
+}
+
+export function MakeDelayedGet() {
+  const [loading, setLoading] = useState('pending')
+  const { get } = useDataFetch('/userinfo', {
+    requestStateListener: setLoading,
+  })
+
+  return (
+    <div>
+      <input
+        type="button"
+        onClick={() => get()}
+        value="Make Get - Success"
+      />
+      <div>Request State: {loading}</div>
+    </div>
+  )
+}
+
+export function MakeErroredDelayedGet() {
+  const [loading, setLoading] = useState('pending')
+  const { get } = useDataFetch('/userinfo/notpresent', {
+    requestStateListener: setLoading,
+  })
+
+  return (
+    <div>
+      <input
+        type="button"
+        onClick={() => get()}
+        value="Make Get - Error"
+      />
+      <div>Request State: {loading}</div>
     </div>
   )
 }
