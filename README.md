@@ -4,7 +4,32 @@ A data fetch hook that stays out of your way.
 
 Several react hooks exist that allow you to fetch data from a server, but most of them do too much for you. This library takes the best part of the fetch hooks (consistent access, global config, easy use, etc.) and makes it as simple as possible.
 
-This library is also accessibility friendly, allowing for a hooks to alert screenreaders when data is fetched. For more information on screenreaders, see [https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/ARIA_Live_Regions](https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/ARIA_Live_Regions).
+This library is also accessibility friendly, allowing for easy setup to alert screenreaders when data is fetched. For more information on screenreaders, see [https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/ARIA_Live_Regions](https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/ARIA_Live_Regions).
+
+## Table of Contents
+
+- [Install](#install)
+- [Usage](#usage)
+  - [Caching data](#caching-data)
+    - [Caching Definition and Precedence Order](#caching-definition-and-precedence-order)
+    - [How to Use Cached Calls](#how-to-use-cached-calls)
+  - [Storing fetched data in state](#storing-fetched-data-in-state)
+  - [Screen Reader Alerts](#screen-reader-alerts)
+- [API](#api)
+  - [Definitions](#definitions)
+  - [DataFetchProvider](#datafetchprovider)
+  - [useDataFetch](#usedatafetch-1)
+    - [useDataFetch methods](#usedatafetch-methods)
+      - [Request Level Options](#request-level-options)
+- [Testing Your Application with useDataFetch](#testing-your-application-with-usedatafetch)
+  - [Spying Data Fetching](#spying-data-fetching)
+- [Development](#development)
+  - [Testing](#testing)
+    - [Running Tests](#running-tests)
+- [Contributing](#contributing)
+- [Troubleshooting](#troubleshooting)
+
+Created by [gh-md-toc](https://github.com/ekalinin/github-markdown-toc)
 
 ## Install
 
@@ -221,6 +246,14 @@ function MakeGetWithSrAlert() {
 ## API
 
 The api for useDataFetch is pretty small intentionally - it isn't supposed to handle all use cases. If you want something that does more state management or handles automatic retries and caching behavior, this library may not be for you.
+
+### Definitions
+
+There are is a need to define the levels that this document described. Often a setting set at one level can be overridden at a more granular level. The levels are as follows:
+
+1. Provider level - this is the first level and defines the configuration set when making a `DataFetchProvider`
+1. Hook Level - this is the second level and defines the configuration set when using the `useDataFetch` hook. Settings here override the Provider level.
+1. Request Level - this is the third level and defines the configuration set when making a request, ie `get()`. Settings here override the Provider and the Hook levels.
 
 ### DataFetchProvider
 
