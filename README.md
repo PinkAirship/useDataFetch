@@ -376,7 +376,7 @@ function MakeGet() {
 
 Available methods that `useDataFetch` will generate are:
 
-`get` - make a get request `get()`. Unlike axios, this does accept a data body `get(data, opts = {})`. Note that `undefined` must be passed in to use the requestConfig without passing in data. To send query params: `get(undefined, { params: {}})`.
+`get` - make a get request `get()`. Unlike axios, this does accept a data body `get(data, opts = {})`. Note that `undefined` must be passed in to use the requestConfig without passing in data. To send query params: `get(undefined, { requestConfig: { params: {} } })`.
 
 `post` - make a post request `post(data, opts = {})`.
 
