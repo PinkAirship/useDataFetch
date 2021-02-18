@@ -53,6 +53,7 @@ export default function App() {
       <div>
         <MakeGet />
         <MakeGetWithParams />
+        <MakeQuery />
         <MakeRandomGet />
         <MakeGetWithData />
         <MakeMethodDefinedCachedGet />
@@ -81,6 +82,22 @@ export function MakeGet({
         type="button"
         onClick={() => get().then(show)}
         value="Make Get"
+      />
+    </div>
+  )
+}
+
+export function MakeQuery({
+  show = ({ data }) => alert(`User Id: ${data.config.params.id}`),
+}) {
+  const { query } = useDataFetch('/getWithData')
+
+  return (
+    <div>
+      <input
+        type="button"
+        onClick={() => query({ id: 'query-1234' }).then(show)}
+        value="Make Query"
       />
     </div>
   )

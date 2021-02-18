@@ -14,6 +14,7 @@ import {
   MakeCustomOverwriteData,
   MakeGetWithData,
   MakeGetWithParams,
+  MakeQuery,
   AppThird,
   AppFourth,
 } from '../example/App'
@@ -45,6 +46,19 @@ it('returns successfully on Make Get with Params', async () => {
     expect(show.mock.calls[0][0].data.config.params).toHaveProperty(
       'id',
       '1234'
+    )
+  })
+})
+
+it('returns successfully on Make Query', async () => {
+  const show = jest.fn()
+  const { findByText } = render(<MakeQuery show={show} />)
+  const button = await findByText(/Make Query/)
+  button.click()
+  await waitFor(() => {
+    expect(show.mock.calls[0][0].data.config.params).toHaveProperty(
+      'id',
+      'query-1234'
     )
   })
 })

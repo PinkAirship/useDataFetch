@@ -108,6 +108,19 @@ export function useDataFetch(
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [updateStateHook]
   )
+  const query = useMemo(
+    () => (
+      params,
+      { useCache, requestConfig, requestStateListener } = {}
+    ) =>
+      makeRequest('get', undefined, {
+        methodUseCache: useCache,
+        methodRequestConfig: { ...requestConfig, params },
+        requestStateListener,
+      }),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [updateStateHook]
+  )
   const post = useMemo(
     () => (
       data,
@@ -189,5 +202,6 @@ export function useDataFetch(
     patch,
     destroy,
     request,
+    query,
   }
 }
