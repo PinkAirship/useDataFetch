@@ -296,19 +296,17 @@ function App() {
 }
 ```
 
-`datafetchInstance` - The instance of the http fetch object to be used. This must conform to the axios request api ([https://github.com/axios/axios#axios-api](https://github.com/axios/axios#axios-api)). If not provided will use an axios instance.
+Below is table of the props that can be passed into the provider:
 
-`axiosCreateOpts` - An object that conforms to the axios configuration api (see [https://github.com/axios/axios#request-config](https://github.com/axios/axios#request-config)) to be used when creating the dataFetchInstance.
-
-`screenReaderAlert` - The function your app uses to alert screenreaders. For more information, visit [https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/ARIA_Live_Regions](https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/ARIA_Live_Regions). The function will be passed the value of `alertScreenReaderWith`.
-
-`makeMockDataFetchInstance` - A function that is used to wrap the dataFetchInstance calls for testing purposes. For example, the example app uses [https://github.com/ctimmerm/axios-mock-adapter](https://github.com/ctimmerm/axios-mock-adapter).
-
-`useCache` - Use a cache for all calls made with this provider. Defaults to false. Can be overridden when defining the request methods, and also when making a request.
-
-`cacheSize` - Set the number of items to keep track of before ejecting values from the cache. Defaults to 50. Cache is a last-recently-used cache.
-
-`updateStateHook` - A function that updates the state you wish to house your fetched data. This function will be passed the responseData and the requestConfig - `(responseData, requestConfig) => {}`. See the `<AppThird>` component in `example/App.js` for example of how it can be used. This hook is overridden if `useDataFetch` also defines `updateStateHook`.
+| Prop | Type | Description |
+| ---- | ---- | ----------- |
+| `datafetchInstance` | `object` | <ul><li>The instance of the http fetch object to be used.</li><li>This must conform to the axios request api ([https://github.com/axios/axios#axios-api](https://github.com/axios/axios#axios-api)).</li><li>If not provided will use an axios instance.</li></ul> |
+| `axiosCreateOpts` | `object` | An object that conforms to the axios configuration api (see [https://github.com/axios/axios#request-config](https://github.com/axios/axios#request-config)) to be used when creating the dataFetchInstance. |
+| `screenReaderAlert` |`function` | <li>The function your app uses to alert screenreaders. <li>The function will be passed the value of `alertScreenReaderWith`.<li>For more information, visit [https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/ARIA_Live_Regions](https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/ARIA_Live_Regions).  |
+| `makeMockDataFetchInstance` | `function` | <li>A function that is used to wrap the dataFetchInstance calls for testing purposes. <li>For example, the example app uses [https://github.com/ctimmerm/axios-mock-adapter](https://github.com/ctimmerm/axios-mock-adapter). |
+| `useCache` | `boolean` | <li>Use a cache for all calls made with this provider. <li>Defaults to false. <li>Can be overridden when defining the request methods, and also when making a request. |
+| `cacheSize` | `number` | <li>Set the number of items to keep track of before ejecting values from the cache. <li>Defaults to 50. <li>Cache is a last-recently-used cache. |
+| `updateStateHook` | `function` | <li>A function that updates the state you wish to house your fetched data. <li>This function will be passed the responseData and the requestConfig - `(responseData, requestConfig) => {}`. <li> This hook is overridden if `useDataFetch` also defines `updateStateHook`.<li>See the `<AppThird>` component in `example/App.js` for example of how it can be used.  |
 
 ### useDataFetch
 
@@ -360,15 +358,22 @@ function MakeGet() {
 }
 ```
 
-`path` - The path to your resource. This can be a fully qualified url, or just the path instance if you configured your DataFetchProvider to use a baseUrl (see [https://github.com/axios/axios#request-config](https://github.com/axios/axios#request-config) for more information on the axios api).
+Below is a table of the parameters for `useDataFetch`:
 
-`config` - An object that accpets specific values.
+| Parameter | Type | Description |
+| --------- | ---- | ----------- |
+| `path` | `string` | <ul><li>The path to your resource.</li><li>This can be a fully qualified url, or just the path instance if you configured your DataFetchProvider to use a baseUrl (see [https://github.com/axios/axios#request-config](https://github.com/axios/axios#request-config) for more information on the axios api).</li></ul> |
+| `config` | `object` | An object that accepts specific values. |
 
-- `updateStateHook` - A function that updates the state you wish to house your fetched data. This will override the `DataFetchProvider` if it has defined the `updateStateHook`.
-- `alertsScreenReaderWith` - A message for the screenReaderAlert to read (see [https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/ARIA_Live_Regions](https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/ARIA_Live_Regions) for more information).
-- `requestConfig` - An axios request configuration object (see [https://github.com/axios/axios#request-config](https://github.com/axios/axios#request-config) for more information on the axios api).
-- `useCache` - Use the cache for all calls returned. Overrides the cache settings for the provider. Can be overridden by at the level that the call is made.
-- `requestStateListener` - Listen for the state changes in the request object. This is a function that recieves a string dictating the state (one of `running`|`success`(for success)|`error`(for error)). Can be overridden at the request level.
+The config parameter has a shape as follows:
+
+| Configuration Key | Type | Description |
+| ----------------- | ---- | ----------- |
+| `updateStateHook` | `function` | <ul><li>A function that updates the state you wish to house your fetched data.</li><li>This will override the `DataFetchProvider` if it has defined the `updateStateHook`.</li><ul> |
+| `alertsScreenReaderWith` | `any` | <ul><li>A message for the screenReaderAlert to read (see [https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/ARIA_Live_Regions](https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/ARIA_Live_Regions) for more information).</li><li>Note that your screenReaderAlert function can accept any type, so this also can be any type.</li></ul> |
+| `requestConfig` | `object` | An axios request configuration object (see [https://github.com/axios/axios#request-config](https://github.com/axios/axios#request-config) for more information on the axios api). |
+| `useCache` | `boolean` | <ul><li>Use the cache for all calls returned.</li><li>Overrides the cache settings for the provider. Can be overridden by at the level that the call is made.</li></ul> |
+| `requestStateListener` | `function` | <ul><li>Listen for the state changes in the request object</li><li>This is a function that recieves a string dictating the state (one of `running`\|`success`(for success)|`error`(for error))</li><li>Can be overridden at the request level.</li></ul> |
 
 #### useDataFetch methods
 
@@ -376,19 +381,15 @@ function MakeGet() {
 
 Available methods that `useDataFetch` will generate are:
 
-`get` - make a get request `get()`. Unlike axios, this does accept a data body `get(data, opts = {})`. Note that `undefined` must be passed in to use the requestConfig without passing in data. To send query params: `get(undefined, { requestConfig: { params: {} } })`.
-
-`query` - make a query (GET) request `query(params, opts = {})`. This is a nicer way of doing `get(undefined, { requestConfig: { params: {} } })`.
-
-`post` - make a post request `post(data, opts = {})`.
-
-`put` - make a put request `put(data, opts = {})`.
-
-`patch` - make a patch request `patch(data, opts = {})`.
-
-`destroy` - make a delete request `destroy(data, opts = {})`.
-
-`request` - make a custom request `request(data, opts = {})`. Note that this requires that you create a request config in your useDataFetch hook setup: `useDataFetch(undefined, { requestConfig: <dataobject>})`. undefined (or some value) must be passed in first or else the requestConfig will not be registered and it will throw an error. For more infomration the axios request config, see [https://github.com/axios/axios#request-config](https://github.com/axios/axios#request-config). You must include a url and a method in the requestConfig or an error will be thrown.
+| Method | Description | Usage | Notes |
+| --- | ---- | -------- | -------- |
+| `get`  | make a get request |  <div style="min-width:15rem">`get()`</div> | <ul><li>Unlike axios, this does accept a data body `get(data, opts = {})`.</li><li>Note that `undefined` must be passed in to use the requestConfig without passing in data. To send query params: `get(undefined, { requestConfig: { params: {} } })`. </li>|
+| `query` | make a query (GET) request |`query(params, opts = {})` | This is a nicer way of doing `get(undefined, { requestConfig: { params: {} } })`. |
+| `post` | make a post request | `post(data, opts = {})` | |
+| `put`  | make a put request |`put(data, opts = {})` | |
+| `patch` | make a patch request |`patch(data, opts = {})` | |
+| `destroy` | make a delete request| `destroy(data, opts = {})` | |
+| `request` | make a custom request |`request(data, opts = {})` | <ul><li>Note that this requires that you create a request config in your useDataFetch hook setup: `useDataFetch(undefined, { requestConfig: <dataobject>})`</li><li>`undefined` (or some value) must be passed in first or else the requestConfig will not be registered and it will throw an error.</li><li>For more infomration the axios request config, see [https://github.com/axios/axios#request-config](https://github.com/axios/axios#request-config). You must include a url and a method in the requestConfig or an error will be thrown.</li></ul>|
 
 All of these methods return an axios request promise if you do not replace the http library with something else. This allows you control to chain after a request.
 
@@ -396,11 +397,11 @@ All of these methods return an axios request promise if you do not replace the h
 
 The request level allows you to dynamically change a few of the options by defining behavior on the fly. These options override similar options defined at the hook level or the provider level.
 
-`useCache` - Use the cache for all calls returned
-
-`requestConfig` is used to send any last minute configuration, such as dymanically generated query params - `{ params: { id: '1234' } }`.
-
-`requestStateListener` - Listen for the state changes in the request object. This is a function that recieves a string dictating the state (one of `running`|`success`(for success)|`error`(for error)).
+| Option | Description |
+| ------ | ----------- |
+| `useCache` | Use the cache for all calls returned |
+| `requestConfig` | Used to send any last minute configuration, such as dymanically generated query params - `{ params: { id: '1234' } }`. |
+| `requestStateListener` | Listen for the state changes in the request object. This is a function that recieves a string dictating the state (one of `running`\|`success`(for success)|`error`(for error)). |
 
 ## Testing Your Application with useDataFetch
 
