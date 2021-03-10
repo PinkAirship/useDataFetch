@@ -2,7 +2,8 @@
   "name": "@pinkairship/use-data-fetch",
   "version": "3.1.0",
   "description": "A data fetch hook that stays out of your way.",
-  "main": "dist/index.js",
+  "main": "dist/pinkairship-use-data-fetch.cjs.js",
+  "module": "dist/pinkairship-use-data-fetch.esm.js",
   "scripts": {
     "test": "jest",
     "start": "webpack serve --config webpack.config.js --progress --profile --watch --content-base src/",
@@ -12,7 +13,7 @@
     "version:minor": "npm version minor",
     "version:major": "npm version major",
     "prepublishOnly": "npm run build",
-    "build": "rm -rf dist && webpack && cp LICENSE dist/LICENSE",
+    "build": "NODE_ENV=production preconstruct build && cp LICENSE dist/LICENSE",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix"
   },
@@ -52,6 +53,7 @@
     "@babel/plugin-transform-runtime": "^7.12.10",
     "@babel/preset-env": "^7.12.11",
     "@babel/preset-react": "^7.12.10",
+    "@preconstruct/cli": "^2.0.6",
     "@testing-library/jest-dom": "^5.11.9",
     "@testing-library/react": "^11.2.3",
     "axios": "^0.21.1",
