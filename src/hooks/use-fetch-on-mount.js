@@ -19,14 +19,14 @@ export function useFetchOnMount(
   useEffect(() => {
     dataFetch.get().then(onSuccess).catch(onFailure)
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [renders])
+  }, [])
   // Must reset the useEffect so that a refetch will update the state of the updateStateHook
   // when the get is applied again (possibly in a refetch)
   const fetches = {}
   Object.keys(dataFetch).forEach((df) => {
-    fetches[df] = ({ ...args }) => {
+    fetches[df] = (newPath, opts) => {
       setRenders(renders + 1)
-      return dataFetch[df](args)
+      return dataFetch[df](newPath, opts)
     }
   })
   return fetches

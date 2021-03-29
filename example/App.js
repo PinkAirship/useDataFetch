@@ -5,6 +5,7 @@ import {
   DataFetchProvider,
   useDataFetch,
   useFetchOnMount,
+  useFetchedArray,
 } from '../src'
 import { nanoid } from 'nanoid'
 
@@ -21,6 +22,29 @@ export function makeMockAxios(axiosInstance) {
   // a function
   mock.onGet('/randomId').reply(function () {
     return [200, { id: nanoid() }]
+  })
+  mock.onGet('/randomIds').reply(function () {
+    const id = nanoid()
+    return [200, [{ id, data: `id: ${id}` }]]
+  })
+  mock.onPut(/randomIds\/\s+/).reply(function (config) {
+    console.log('here')
+    const id = config.url.split('/')[1]
+    return [200, [{ id, data: `id: ${id} - I changed via a put!` }]]
+  })
+  mock.onPatch(/randomIds\/\s+/).reply(function (config) {
+    const id = config.url.split('/')[1]
+    return [200, [{ id, data: `id: ${id} - I changed via a patch!` }]]
+  })
+  mock.onPost('/randomIds').reply(function () {
+    const id = nanoid()
+    return [
+      200,
+      [{ id, data: `id: ${id} - I was created via a post!` }],
+    ]
+  })
+  mock.onDelete(/randomIds\/[\s_]+/).reply(function () {
+    return [200, []]
   })
   mock.onGet('/getWithData').reply(function (config) {
     return [200, { message: config.data, config }]
@@ -70,6 +94,7 @@ export default function App() {
         <MakeCustom />
         <MakeGetWithSrAlert />
         <MakeStoredGetFetch />
+        <UseManagedArrayFetch />
         <MakeCustomOverwriteData />
       </div>
     </DataFetchProvider>
@@ -264,6 +289,54 @@ export function MakeStoredGetFetch() {
       />
       {ids.map((id) => (
         <div key={id.id}>Created id: {id.id}</div>
+      ))}
+    </div>
+  )
+}
+
+export function UseManagedArrayFetch() {
+  const [ids, setIds, requestState, dataFetch] = useFetchedArray(
+    '/randomIds'
+  )
+
+  return (
+    <div>
+      <input
+        type="button"
+        onClick={() => dataFetch.post()}
+        value="Make Managed Array State Post"
+      />
+      <input
+        type="button"
+        onClick={() => dataFetch.put(ids[0])}
+        value="Make Managed Array State Put"
+      />
+      <input
+        type="button"
+        onClick={() => dataFetch.patch(ids[0])}
+        value="Make Managed Array State Patch"
+      />
+      <input
+        type="button"
+        onClick={() => dataFetch.destroy(ids[0])}
+        value="Make Managed Array State Destroy"
+      />
+      <input
+        type="button"
+        onClick={() =>
+          setIds([
+            ...ids,
+            {
+              id: nanoid(),
+              data: 'I am created without a trip to the server!',
+            },
+          ])
+        }
+        value="Make Managed Array State Update without Server Trip"
+      />
+      <div>{requestState}</div>
+      {ids.map((id) => (
+        <div key={id.id}>{id.data}</div>
       ))}
     </div>
   )

@@ -413,7 +413,7 @@ The config parameter has a shape as follows:
 | `alertsScreenReaderWith` | `any` | <ul><li>A message for the screenReaderAlert to read (see [https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/ARIA_Live_Regions](https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/ARIA_Live_Regions) for more information).</li><li>Note that your screenReaderAlert function can accept any type, so this also can be any type.</li></ul> |
 | `requestConfig` | `object` | An axios request configuration object (see [https://github.com/axios/axios#request-config](https://github.com/axios/axios#request-config) for more information on the axios api). |
 | `useCache` | `boolean` | <ul><li>Use the cache for all calls returned.</li><li>Overrides the cache settings for the provider. Can be overridden by at the level that the call is made.</li></ul> |
-| `requestStateListener` | `function` | <ul><li>Listen for the state changes in the request object</li><li>This is a function that recieves a string dictating the state (one of `running`\|`success`(for success)|`error`(for error))</li><li>Can be overridden at the request level.</li></ul> |
+| `requestStateListener` | `function` | <ul><li>Listen for the state changes in the request object</li><li>This is a function that recieves a string dictating the state (one of `running`\|`success`(for success)\|`error`(for error))</li><li>Can be overridden at the request level.</li></ul> |
 
 #### useDataFetch methods
 
