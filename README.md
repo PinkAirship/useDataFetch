@@ -109,6 +109,46 @@ function MakeGet () {
 
 See `example/App.js` for more examples of how to use the other type of http requests (POST, PUT, DELETE, PATCH, and a custom config).
 
+## useFetchOnMount
+
+`useFetchOnMount` handles the common use case of loading data on mount. Without `useFetchOnMount`, when fetching data on mount of a component is handled as follows:
+
+```jsx
+function MakeGet () {
+  const updateStatefunc = updateStateFunc(somestate)
+  const { get } = useDataFetch('http://localhost/userinfo')
+
+  useEffect(() => get.then(updateStateFunc).catch(onErrorHandler)))
+
+  ...
+}
+```
+
+With preload:
+
+```jsx
+function MakeGet () {
+  const updateStatefunc = updateStateFunc(somestate)
+  const { get } = useDataFetch('http://localhost/userinfo', {
+    hookOptions: {
+      updateStateHook: updateStateFunc
+    }
+  })
+
+  const refetch = () => get()
+
+  ...
+}
+```
+
+The advantages of this api:
+
+1. Simplified onMount datafetch management
+1. Greater control over refetching
+1. More delcaritive naming of onMount fetching
+
+All of the options used for the base `useDataFetch` can be passed down in the hookOptions section (and all options defined at the same levels as before are handled the same way).
+
 ### Caching data
 
 Caching data is useful if you have several components in your application that use the same data but it is inconvenient to pass that data using props. Setting a cache behavior allows you to setup a datafetch for an endpoint and then retrieve that same data only once for multiple components.
@@ -402,6 +442,78 @@ The request level allows you to dynamically change a few of the options by defin
 | `useCache` | Use the cache for all calls returned |
 | `requestConfig` | Used to send any last minute configuration, such as dymanically generated query params - `{ params: { id: '1234' } }`. |
 | `requestStateListener` | Listen for the state changes in the request object. This is a function that recieves a string dictating the state (one of `running`\|`success`(for success)|`error`(for error)). |
+
+## useFetchOnMount
+
+To use `useFetchOnMount`, do the following:
+
+
+```jsx
+import { useFetchOnMount } from '@pinkairship/useDataFetch'
+
+function MakeGet() {
+  // destructure the get function to request info from /userinfo
+  const { get } = useFetchOnMount('/userinfo')
+
+  return (
+    <div>
+      <input
+        type="button"
+        // call the get function on click
+        onClick={() => get()}
+        value="Refetch Get"
+      />
+    </div>
+  )
+}
+```
+
+If you want to track the request data using some state tracking:
+
+```jsx
+import { useFetchOnMount } from '@pinkairship/useDataFetch'
+
+function MakeGet() {
+  // set state on the component using useDataFetch
+  const [ids, setIds] = useState([])
+  // to prevent refetching data on each rerender, you must wrap the
+  // the state update in a useCallback hook
+  const updateStateHook = useCallback(
+    // make sure to wrap the set state function in something that
+    // will be called after the data is retrieved
+    ({ data: id }) => setIds([...ids, id]),
+    [ids]
+  )
+  // destructure the get function to request info from /userinfo
+  const { get } = useFetchOnMount('/userinfo', { hookOptions: updateStateHook })
+
+  return (
+    <div>
+      <input
+        type="button"
+        // call the get function on click
+        onClick={() => get()}
+        value="Make Get"
+      />
+    </div>
+  )
+}
+```
+
+`useFetchOnMount` returns the same object as `useDataFetch`, so all the same api applies here except that you will need to pass those options through the `hookOptions` key of the opts config. There are a few additional options that can be used when defining a `useFetchOnMount` request.
+
+| Parameter | Type | Description |
+| --------- | ---- | ----------- |
+| `path` | `string` | <ul><li>The path to your resource.</li><li>This can be a fully qualified url, or just the path instance if you configured your DataFetchProvider to use a baseUrl (see [https://github.com/axios/axios#request-config](https://github.com/axios/axios#request-config) for more information on the axios api).</li></ul> |
+| `config` | `object` | An object that accepts specific values. |
+
+The config parameter has a shape as follows:
+
+| Configuration Key | Type | Description |
+| ----------------- | ---- | ----------- |
+| `onSuccess` | func | A callback to fire when the request is successful. Note that this is called after the `updateStateHook` is called (if defined) |
+| `onFailure` | func | A callback to fire when the request is a failure. Fires after `updateStateHook` |
+| `hookOptions` | object | The options for the underlying `useDataFetch` function. See the `useDataFetch` config options for more details. |
 
 ## Testing Your Application with useDataFetch
 

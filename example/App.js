@@ -1,7 +1,11 @@
 import React, { useCallback, useState } from 'react'
 import MockAdapter from 'axios-mock-adapter'
 
-import { DataFetchProvider, useDataFetch } from '../src'
+import {
+  DataFetchProvider,
+  useDataFetch,
+  useFetchOnMount,
+} from '../src'
 import { nanoid } from 'nanoid'
 
 export function makeMockAxios(axiosInstance) {
@@ -51,6 +55,7 @@ export default function App() {
       makeMockDataFetchInstance={makeMockAxios}
     >
       <div>
+        <MakePreloadGet />
         <MakeGet />
         <MakeGetWithParams />
         <MakeQuery />
@@ -83,6 +88,43 @@ export function MakeGet({
         onClick={() => get().then(show)}
         value="Make Get"
       />
+    </div>
+  )
+}
+
+export function MakePreloadGet({
+  show = ({ data }) => alert(`User Id: ${data.user.id}`),
+}) {
+  const [users, setUsers] = useState([])
+  const updateStateHook = useCallback(
+    ({ data: { user } }) => setUsers([...users, user]),
+    [users]
+  )
+  const { get } = useFetchOnMount('/userinfo', {
+    onSuccess: (request) => {
+      console.log('Preload request successful')
+      return request
+    },
+    hookOptions: {
+      updateStateHook,
+    },
+  })
+
+  return (
+    <div>
+      Check console to see preload success. Click the button below to
+      refetch. Check console also to see that the value was output
+      there for on success.
+      <div>
+        <input
+          type="button"
+          onClick={() => get().then(show)}
+          value="Make Preload Get Refetch"
+        />
+      </div>
+      {users.map((user, i) => (
+        <div key={i}>Created id: {user.id}</div>
+      ))}
     </div>
   )
 }

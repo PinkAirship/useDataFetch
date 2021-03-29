@@ -20,9 +20,9 @@
     "ecmaFeatures": {
       "jsx": true
     },
-    "requireConfigFile" : "false"
+    "requireConfigFile" : "false",
+    "babelOptions": { "configFile": "./babel.config.js" }
   },
-  "babelOptions": { "configFile": "./babel.config.js" },
   "settings": {
     "react": {
       "version": "detect"

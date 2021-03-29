@@ -4,6 +4,7 @@ import { waitFor, render as baseRender } from '@testing-library/react'
 import { render } from './test-utils'
 import {
   MakeGet,
+  MakePreloadGet,
   MakePost,
   MakePut,
   MakePatch,
@@ -184,6 +185,26 @@ it('creates divs with ids when clicked for Make Stored Get Fetch', async () => {
   const button = await findByText(/Make Stored Get/)
   button.click()
   await findByText(/Created id/)
+})
+
+it('creates divs with ids when clicked for Make Stored Get Fetch', async () => {
+  const show = jest.fn()
+  const { findByText, queryAllByText } = render(
+    <MakePreloadGet show={show} />
+  )
+
+  const button = await findByText(/Make Preload Get Refetch/)
+  const createdIdNodes = queryAllByText(/Created id/)
+  // eslint-disable-next-line jest-dom/prefer-in-document
+  expect(createdIdNodes).toHaveLength(1)
+  button.click()
+  await waitFor(() => {
+    expect(show.mock.calls[0][0].data).toHaveProperty(
+      'user.id',
+      'my-id'
+    )
+  })
+  expect(queryAllByText(/Created id/)).toHaveLength(2)
 })
 
 it('creates divs with ids when clicked for Make Random Get and provider defines stored data', async () => {
