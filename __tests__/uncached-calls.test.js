@@ -16,6 +16,7 @@ import {
   MakeGetWithData,
   MakeGetWithParams,
   MakeQuery,
+  UseManagedArrayFetch,
   AppThird,
   AppFourth,
 } from '../example/App'
@@ -249,4 +250,77 @@ it('updates state when loading - error', async () => {
   const error = await findAllByText(/error/)
   // eslint-disable-next-line jest-dom/prefer-in-document
   expect(error).toHaveLength(1)
+})
+
+it('creates divs with ids when posting using use-fetched-array', async () => {
+  const { findByText, queryAllByText } = render(
+    <UseManagedArrayFetch />
+  )
+  const button = await findByText(/Make Managed Array State Post/)
+  const createdIdNodes = queryAllByText(/id:/)
+  // eslint-disable-next-line jest-dom/prefer-in-document
+  expect(createdIdNodes).toHaveLength(1)
+  button.click()
+  const node = await findByText(/I was created via a post!/)
+  expect(node).toBeInTheDocument()
+  expect(queryAllByText(/id:/)).toHaveLength(2)
+})
+
+it('updates divs with ids when putting using use-fetched-array', async () => {
+  const { findByText, queryAllByText } = render(
+    <UseManagedArrayFetch />
+  )
+  const button = await findByText(/Make Managed Array State Put/)
+  const createdIdNodes = queryAllByText(/id:/)
+  // eslint-disable-next-line jest-dom/prefer-in-document
+  expect(createdIdNodes).toHaveLength(1)
+  button.click()
+  const node = await findByText(/I changed via a put!/)
+  expect(node).toBeInTheDocument()
+  // eslint-disable-next-line jest-dom/prefer-in-document
+  expect(queryAllByText(/id:/)).toHaveLength(1)
+})
+
+it('updates divs with ids when patching using use-fetched-array', async () => {
+  const { findByText, queryAllByText } = render(
+    <UseManagedArrayFetch />
+  )
+  const button = await findByText(/Make Managed Array State Patch/)
+  const createdIdNodes = queryAllByText(/id:/)
+  // eslint-disable-next-line jest-dom/prefer-in-document
+  expect(createdIdNodes).toHaveLength(1)
+  button.click()
+  const node = await findByText(/I changed via a patch!/)
+  expect(node).toBeInTheDocument()
+  // eslint-disable-next-line jest-dom/prefer-in-document
+  expect(queryAllByText(/id:/)).toHaveLength(1)
+})
+
+it('removes divs with ids when destroying using use-fetched-array', async () => {
+  const { findByText, queryAllByText } = render(
+    <UseManagedArrayFetch />
+  )
+  const button = await findByText(/Make Managed Array State Destroy/)
+  const createdIdNodes = queryAllByText(/id:/)
+  // eslint-disable-next-line jest-dom/prefer-in-document
+  expect(createdIdNodes).toHaveLength(1)
+  button.click()
+  await findByText(/Make Managed Array State Destroy/)
+  // eslint-disable-next-line jest-dom/prefer-in-document
+  expect(queryAllByText(/id:/)).toHaveLength(0)
+})
+
+it('removes divs with ids when destroying using use-fetched-array', async () => {
+  const { findByText, queryAllByText } = render(
+    <UseManagedArrayFetch />
+  )
+  const button = await findByText(/Make Managed Array State Update/)
+  const createdIdNodes = queryAllByText(/id:/)
+  // eslint-disable-next-line jest-dom/prefer-in-document
+  expect(createdIdNodes).toHaveLength(1)
+  button.click()
+  const node = await findByText(
+    /I am created without a trip to the server!/
+  )
+  expect(node).toBeInTheDocument()
 })

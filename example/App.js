@@ -27,14 +27,13 @@ export function makeMockAxios(axiosInstance) {
     const id = nanoid()
     return [200, [{ id, data: `id: ${id}` }]]
   })
-  mock.onPut(/randomIds\/\s+/).reply(function (config) {
-    console.log('here')
-    const id = config.url.split('/')[1]
-    return [200, [{ id, data: `id: ${id} - I changed via a put!` }]]
+  mock.onPut(/randomIds\/[\w_\d-]+/).reply(function (config) {
+    const id = config.url.split('/')[2]
+    return [200, { id, data: `id: ${id} - I changed via a put!` }]
   })
-  mock.onPatch(/randomIds\/\s+/).reply(function (config) {
-    const id = config.url.split('/')[1]
-    return [200, [{ id, data: `id: ${id} - I changed via a patch!` }]]
+  mock.onPatch(/randomIds\/[\w_\d-]+/).reply(function (config) {
+    const id = config.url.split('/')[2]
+    return [200, { id, data: `id: ${id} - I changed via a patch!` }]
   })
   mock.onPost('/randomIds').reply(function () {
     const id = nanoid()
@@ -43,7 +42,7 @@ export function makeMockAxios(axiosInstance) {
       [{ id, data: `id: ${id} - I was created via a post!` }],
     ]
   })
-  mock.onDelete(/randomIds\/[\s_]+/).reply(function () {
+  mock.onDelete(/randomIds\/[\w_\d-]+/).reply(function () {
     return [200, []]
   })
   mock.onGet('/getWithData').reply(function (config) {
@@ -308,7 +307,9 @@ export function UseManagedArrayFetch() {
       />
       <input
         type="button"
-        onClick={() => dataFetch.put(ids[0])}
+        onClick={() =>
+          dataFetch.put(ids[0]).then((err) => console.log(err))
+        }
         value="Make Managed Array State Put"
       />
       <input

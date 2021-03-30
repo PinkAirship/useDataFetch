@@ -3,14 +3,11 @@ import { useFetchOnMount } from './use-fetch-on-mount'
 
 const passThrough = (data) => data
 
-function validateNewData(data) {
-  const id = data.id
-  if (!id) {
-    throw new Error(
-      'Cannot use default replaceValue with the return object not containing a value for id.'
-    )
+function getKey(data) {
+  if (!data.id) {
+    throw new 'Cannot use default extractObjectKey for objects that do not have an id field.'()
   }
-  return id
+  return data.id
 }
 
 export function useFetchedArray(
@@ -23,6 +20,7 @@ export function useFetchedArray(
     replaceValue: replaceValue,
     removeValue: removeValue,
     updatesUsePath: updatesUsePath,
+    extractObjectKey: extractObjectKey,
   } = {
     onSuccess: passThrough,
     onFailure: passThrough,
@@ -31,6 +29,7 @@ export function useFetchedArray(
     replaceValue: null,
     removeValue: null,
     updatesUsePath: true,
+    extractObjectKey: getKey,
   }
 ) {
   const [values, setValues] = useState([])
@@ -55,14 +54,13 @@ export function useFetchedArray(
   const updateValue = replaceValue
     ? replaceValue
     : ({ data }) => {
-        const newData = transform(newData)
-        validateNewData(newData)
-        const objectKey = newData.id
+        const newData = transform(data)
+        const objectKey = extractObjectKey(newData)
         const oldValueIndex = values.findIndex(
           (v) => v.id == objectKey
         )
         const newValues = [...values]
-        newValues[oldValueIndex] = transform(data)
+        newValues[oldValueIndex] = newData
         setValues(newValues)
       }
   const updatePath = updatesUsePath
@@ -73,9 +71,7 @@ export function useFetchedArray(
     get: dataFetch.get,
     post: (postData, opts) => {
       const postUpdateStateHook = ({ data }) => {
-        console.log('posted')
         const newValues = transform(data)
-        console.log('OldValues:', values, 'NewValues:', newValues)
         setValues([...values, ...newValues])
       }
       return dataFetch.post(postData, {
@@ -84,8 +80,6 @@ export function useFetchedArray(
       })
     },
     put: (putData, opts) => {
-      console.log(putData)
-      console.log(updatePath(putData))
       return dataFetch.put(putData, {
         ...opts,
         updateStateHook: updateValue,
