@@ -2,10 +2,25 @@ import { useState, useCallback } from 'react'
 import { useFetchOnMount } from './use-fetch-on-mount'
 
 const passThrough = (data) => data
-
+const getArray = (data) => {
+  if (Array.isArray(data)) {
+    return data
+  }
+  if (Object.keys(data).length == 1) {
+    const arr = data[Object.keys(data)[0]]
+    if (Array.isArray(arr)) {
+      return data[Object.keys(data)[0]]
+    }
+  }
+  throw new Error(
+    'Your data does not have a recognized pattern. Please provide your own transform function.'
+  )
+}
 function getKey(data) {
   if (!data.id) {
-    throw new 'Cannot use default extractObjectKey for objects that do not have an id field.'()
+    throw new Error(
+      'Cannot use default extractObjectKey for objects that do not have an id field.'
+    )
   }
   return data.id
 }
@@ -17,6 +32,7 @@ export function useFetchedArray(
     onFailure: onFailure,
     hookOptions: hookOptions,
     transform: transform,
+    extractList: extractList,
     replaceValue: replaceValue,
     removeValue: removeValue,
     updatesUsePath: updatesUsePath,
@@ -26,6 +42,7 @@ export function useFetchedArray(
     onFailure: passThrough,
     hookOptions: {},
     transform: passThrough,
+    extractList: getArray,
     replaceValue: null,
     removeValue: null,
     updatesUsePath: null,
@@ -36,10 +53,10 @@ export function useFetchedArray(
   const [requestState, setRequestState] = useState('pending')
   const updateStateHook = useCallback(
     ({ data }) => {
-      const newValues = transform(data)
+      const newValues = extractList(data)
       setValues(newValues)
     },
-    [transform]
+    [extractList]
   )
   const dataFetch = useFetchOnMount(path, {
     onSuccess: onSuccess,
@@ -71,7 +88,8 @@ export function useFetchedArray(
     get: dataFetch.get,
     post: (postData, opts = {}) => {
       const postUpdateStateHook = ({ data }) => {
-        const newValues = transform(data)
+        let newValues = transform(data)
+        newValues = Array.isArray(newValues) ? newValues : [newValues]
         setValues([...values, ...newValues])
       }
       return dataFetch.post(postData, {

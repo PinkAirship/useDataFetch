@@ -1,4 +1,4 @@
-import { useContext, useMemo } from 'react'
+import { useContext } from 'react'
 import { DataFetchContext } from '../contexts/data-fetch-provider'
 
 // stable function signature for equality checks

@@ -68,7 +68,7 @@ export function makeMockAxios(axiosInstance) {
     const id = nanoid()
     return [
       200,
-      [{ id, data: `id: ${id} - I was created via a post!` }],
+      { id, data: `id: ${id} - I was created via a post!` },
     ]
   })
   mock.onDelete(/randomIds\/[\w_\d-]+/).reply(function () {
