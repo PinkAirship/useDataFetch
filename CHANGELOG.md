@@ -7,6 +7,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [3.2.0] - 2021-03-31
+
+### Added
+
+- Added useFetchOnMount
+- Added useFetchedArray
+- Added useFetched
+
+### Changed
+
+### Removed
+
 ## [3.1.1] - 2021-02-13
 
 ### Added
