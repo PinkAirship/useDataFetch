@@ -12,6 +12,7 @@ Table of Contents
 * [Install](#install)
 * [Usage](#usage)
   * [useDataFetch](#usedatafetch-1)
+  * [useFetched](#usefetched)
   * [useFetchedArray](#usefetchedarray)
   * [useFetchOnMount](#usefetchonmount)
   * [Additional Usage Information](#additional-usage-information)
@@ -27,6 +28,7 @@ Table of Contents
   * [useDataFetch](#usedatafetch-2)
     * [useDataFetch methods](#usedatafetch-methods)
       * [Request Level Options](#request-level-options)
+  * [useFetched](#usefetched-1)
   * [useFetchedArray](#usefetchedarray-1)
     * [Caveats](#caveats)
     * [API](#api-1)
@@ -119,6 +121,44 @@ function MakeGet () {
 
 See `example/App.js` for more examples of how to use the other type of http requests (POST, PUT, DELETE, PATCH, and a custom config).
 
+### useFetched
+
+`useFetched` is a hook that acts like `useState` but fetches the initial value from the server (if path provided), or allows you to create a value using the familiar `useState` functionality that will then provide functions to post, patch, etc the data to the server. The basic usage is as follows:
+
+```jsx
+function UseManagedFetch() {
+  const [id, setId, , dataFetch] = useFetched('/echo/myId')
+
+  return (
+    <div>
+      <input
+        type="button"
+        onClick={() =>
+          setId({
+            id: nanoid(),
+            data: 'I am created without a trip to the server!',
+          })
+        }
+        value="Make Managed State Update without Server Trip"
+      />
+      <input
+        type="button"
+        onClick={() => dataFetch.post()}
+        value="Save to server as new entity"
+      />
+      <input
+        type="button"
+        onClick={() => dataFetch.put()}
+        value="Update entity after it has been created"
+      />
+      <div>{requestState}</div>
+      <div>{id.data}</div>
+    </div>
+  )
+}
+```
+
+See `example/App.js` for examples on how to use the other functions from datafetch.
 ### useFetchedArray
 
 `useFetchedArray` is a hook that acts like `useState` but fetches the initial collection of values from a server. It supports the full lifecycle of items in a collection. The basic usage is as follows:
@@ -490,6 +530,85 @@ The request level allows you to dynamically change a few of the options by defin
 | `useCache` | Use the cache for all calls returned |
 | `requestConfig` | Used to send any last minute configuration, such as dymanically generated query params - `{ params: { id: '1234' } }`. |
 | `requestStateListener` | Listen for the state changes in the request object. This is a function that recieves a string dictating the state (one of `running`\|`success`(for success)|`error`(for error)). |
+
+### useFetched
+
+To use `useFetched`, do the following (note that this still requires the DataFetchProvider wrapping the component at some higher level):
+
+```jsx
+function UseManagedFetch() {
+  const [id, setId, requestState, dataFetch] = useFetched('/randomId')
+
+  return (
+    <div>
+      <input
+        type="button"
+        onClick={() => dataFetch.post()}
+        value="Make Managed State Post"
+      />
+
+      ... other datafetch requests
+
+      <div>{requestState}</div>
+      <div>{id.data}</div>
+    </div>
+  )
+}
+```
+
+You can also use this hook like a regular use state that has a direct hook to create via the given endpoint once it has been created:
+
+```jsx
+function UseManagedFetch() {
+  const [id, setId, , dataFetch] = useFetched('/randomId')
+
+  return (
+    <div>
+      <input
+        type="button"
+        onClick={() =>
+          setId({
+            id: nanoid(),
+            data: 'I am created without a trip to the server!',
+          })
+        }
+        value="Make Managed State Update without Server Trip"
+      />
+      <input
+        type="button"
+        onClick={() => dataFetch.post()}
+        value="Save to server as new entity"
+      />
+      <input
+        type="button"
+        onClick={() => dataFetch.put()}
+        value="Update entity after it has been created"
+      />
+      <div>{requestState}</div>
+      <div>{id.data}</div>
+    </div>
+  )
+}
+```
+
+Note that the pattern for updating assumes that you use `POST` to create a new entity from the route provided without the trailing id (ie `/echo/myId` would have a post path of `/echo`). There is a way around this as described below by using `createUsesPath` in the configuration.
+
+The following table describes the parameters passed into the hook:
+
+| Parameter | Type | Description |
+| --------- | ---- | ----------- |
+| `path` | `string` | <ul><li>The path to your resource.</li><li>This can be a fully qualified url, or just the path instance if you configured your DataFetchProvider to use a baseUrl (see [https://github.com/axios/axios#request-config](https://github.com/axios/axios#request-config) for more information on the axios api).</li></ul> |
+| `config` | `object` | An object that accepts specific values. |
+
+The config parameter has a shape as follows:
+
+| Configuration Key | Type | Description |
+| ----------------- | ---- | ----------- |
+| `onSuccess` | func | A callback to fire when the request is successful. Note that this is called after the `updateStateHook` is called (if defined) |
+| `onFailure` | func | A callback to fire when the request is a failure. Fires after `updateStateHook` |
+| `hookOptions` | object | The options for the underlying `useDataFetch` function. See the `useDataFetch` config options for more details. |
+| `createUsesPath` | func | If your endpoints do not follow the convention described, you can pass in a function that will update the path to what it needs to be (ie `(path) => /my/new/path`) |
+
 ### useFetchedArray
 
 To use `useFetchedArray`, do the following (note that this still requires the DataFetchProvider wrapping the component at some higher level):
@@ -569,6 +688,18 @@ These caveats can be overcome by passing in a few configuration functions:
 | `removeValue` | Similar to `replaceValue` except it is used to remove the value on `destroy` only. See `replaceValue` for more details. |
 
 Also, only `get`, `post`, `put`, `patch`, `destroy` are defined in the `dataFetch` object. If you require the flexibility provided by the full `useDataFetch` api, then this hook should not be used and `useDataFetch` should be used instead.
+
+The `destroy` function is slightly changed - it has the following call signature: `destroy(destroyData, removalKey, opts)`. `destroyData` is the same as `useDataFetch`, `removalKey` is the value of the id of the object that is being remove, and `opts` is the configuration opts for the underlying hook.
+
+Example destroy call:
+
+```js
+// do not send any data, just remove this id
+destroy(undefined, 'myId', {} //this last option can also be ommitted)
+
+// send data and remove this id
+destroy({id: 'asd'}, 'foo')
+```
 
 #### API
 

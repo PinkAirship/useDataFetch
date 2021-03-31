@@ -17,6 +17,7 @@ import {
   MakeGetWithParams,
   MakeQuery,
   UseManagedArrayFetch,
+  UseManagedFetch,
   AppThird,
   AppFourth,
 } from '../example/App'
@@ -323,4 +324,38 @@ it('removes divs with ids when destroying using use-fetched-array', async () => 
     /I am created without a trip to the server!/
   )
   expect(node).toBeInTheDocument()
+})
+
+it('gets the data from the server', async () => {
+  const { findByText, queryByText } = render(<UseManagedFetch />)
+  await findByText(/Make Managed State Post/)
+  expect(queryByText(/myId/)).toBeInTheDocument()
+})
+it('posts the data to the server', async () => {
+  const { findByText, queryByText } = render(<UseManagedFetch />)
+  const button = await findByText(/Make Managed State Post/)
+  button.click()
+  await findByText(/Make Managed State Post/)
+  expect(queryByText(/Hi\sthere!/)).toBeInTheDocument()
+})
+it('puts the data to the server', async () => {
+  const { findByText, queryByText } = render(<UseManagedFetch />)
+  const button = await findByText(/Make Managed State Post/)
+  button.click()
+  await findByText(/Make Managed State Put/)
+  expect(queryByText(/id:/)).toBeInTheDocument()
+})
+it('patches the data to the server', async () => {
+  const { findByText, queryByText } = render(<UseManagedFetch />)
+  const button = await findByText(/Make Managed State Patch/)
+  button.click()
+  await findByText(/Make Managed State Put/)
+  expect(queryByText(/id:/)).toBeInTheDocument()
+})
+it('destroys the data', async () => {
+  const { findByText, queryByText } = render(<UseManagedFetch />)
+  const button = await findByText(/Make Managed State Destroy/)
+  button.click()
+  await findByText(/Make Managed State Destroy/)
+  expect(queryByText(/myId/)).not.toBeInTheDocument()
 })

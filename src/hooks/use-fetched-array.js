@@ -69,7 +69,7 @@ export function useFetchedArray(
 
   const managedDataFetch = {
     get: dataFetch.get,
-    post: (postData, opts) => {
+    post: (postData, opts = {}) => {
       const postUpdateStateHook = ({ data }) => {
         const newValues = transform(data)
         setValues([...values, ...newValues])
@@ -79,7 +79,7 @@ export function useFetchedArray(
         updateStateHook: postUpdateStateHook,
       })
     },
-    put: (putData, opts) => {
+    put: (putData, opts = {}) => {
       return dataFetch.put(putData, {
         ...opts,
         updateStateHook: updateValue,
@@ -88,7 +88,7 @@ export function useFetchedArray(
         },
       })
     },
-    patch: (patchData, opts) => {
+    patch: (patchData, opts = {}) => {
       return dataFetch.patch(patchData, {
         ...opts,
         updateStateHook: updateValue,
@@ -97,7 +97,7 @@ export function useFetchedArray(
         },
       })
     },
-    destroy: (destroyData, removalKey, opts) => {
+    destroy: (destroyData, removalKey, opts = {}) => {
       const destroyUpdateStateHook = removeValue
         ? removeValue
         : () => {

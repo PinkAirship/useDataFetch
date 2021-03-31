@@ -6,6 +6,7 @@ import {
   useDataFetch,
   useFetchOnMount,
   useFetchedArray,
+  useFetched,
 } from '../src'
 import { nanoid } from 'nanoid'
 
@@ -21,7 +22,35 @@ export function makeMockAxios(axiosInstance) {
   // We want a different id each time this endpoint is called, so make it
   // a function
   mock.onGet('/randomId').reply(function () {
-    return [200, { id: nanoid() }]
+    const id = nanoid()
+    return [200, { id, data: id }]
+  })
+  mock.onGet(/echo\/[\w_\d-]+/).reply(function (config) {
+    const id = config.url.split('/')[2]
+    return [200, { id, data: id }]
+  })
+  mock.onPut(/echo\/[\w_\d-]+/).reply(function (config) {
+    const id = config.url.split('/')[2]
+    return [200, { id, data: `id: ${id} - I changed via a put!` }]
+  })
+  mock.onPatch(/echo\/[\w_\d-]+/).reply(function (config) {
+    const id = config.url.split('/')[2]
+    return [200, { id, data: `id: ${id} - I changed via a patch!` }]
+  })
+  mock.onPost('/echo').reply(function (config) {
+    const id = nanoid()
+    return [
+      200,
+      {
+        id,
+        data: `id: ${id} - I was created via a post! my data: ${
+          JSON.parse(config.data).message
+        }`,
+      },
+    ]
+  })
+  mock.onDelete(/echo\/[\w_\d-]+/).reply(function () {
+    return [200, null]
   })
   mock.onGet('/randomIds').reply(function () {
     const id = nanoid()
@@ -94,6 +123,7 @@ export default function App() {
         <MakeGetWithSrAlert />
         <MakeStoredGetFetch />
         <UseManagedArrayFetch />
+        <UseManagedFetch />
         <MakeCustomOverwriteData />
       </div>
     </DataFetchProvider>
@@ -339,6 +369,51 @@ export function UseManagedArrayFetch() {
       {ids.map((id) => (
         <div key={id.id}>{id.data}</div>
       ))}
+    </div>
+  )
+}
+
+export function UseManagedFetch() {
+  const [id, setId, requestState, dataFetch] = useFetched(
+    '/echo/myId'
+  )
+
+  return (
+    <div>
+      <input
+        type="button"
+        onClick={() => dataFetch.post({ message: 'Hi there!' })}
+        value="Make Managed State Post"
+      />
+      <input
+        type="button"
+        onClick={() =>
+          dataFetch.put().then((err) => console.log(err))
+        }
+        value="Make Managed State Put"
+      />
+      <input
+        type="button"
+        onClick={() => dataFetch.patch()}
+        value="Make Managed State Patch"
+      />
+      <input
+        type="button"
+        onClick={() => dataFetch.destroy()}
+        value="Make Managed State Destroy"
+      />
+      <input
+        type="button"
+        onClick={() =>
+          setId({
+            id: nanoid(),
+            data: 'I am created without a trip to the server!',
+          })
+        }
+        value="Make Managed State Update without Server Trip"
+      />
+      <div>{requestState}</div>
+      <div>{id && id.data}</div>
     </div>
   )
 }
