@@ -6,33 +6,40 @@ Several react hooks exist that allow you to fetch data from a server, but most o
 
 This library is also accessibility friendly, allowing for easy setup to alert screenreaders when data is fetched. For more information on screenreaders, see [https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/ARIA_Live_Regions](https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/ARIA_Live_Regions).
 
-# Table of Contents
+Table of Contents
+=================
 
-- [Table of Contents](#table-of-contents)
-- [Install](#install)
-- [Usage](#usage)
-  - [Caching data](#caching-data)
-    - [Caching Definition and Precedence Order](#caching-definition-and-precedence-order)
-    - [How to Use Cached Calls](#how-to-use-cached-calls)
-  - [Storing fetched data in state](#storing-fetched-data-in-state)
-  - [Screen Reader Alerts](#screen-reader-alerts)
-  - [Listening for Request State Changes](#listening-for-request-state-changes)
-- [API](#api)
-  - [Definitions](#definitions)
-  - [DataFetchProvider](#datafetchprovider)
-  - [useDataFetch](#usedatafetch-1)
-    - [useDataFetch methods](#usedatafetch-methods)
-      - [Request Level Options](#request-level-options)
-- [Testing Your Application with useDataFetch](#testing-your-application-with-usedatafetch)
-  - [Spying Data Fetching](#spying-data-fetching)
-- [Development](#development)
-  - [Testing](#testing)
-    - [Running Tests](#running-tests)
-- [Contributing](#contributing)
-- [Troubleshooting](#troubleshooting)
+* [Install](#install)
+* [Usage](#usage)
+  * [useDataFetch](#usedatafetch-1)
+  * [useFetchedArray](#usefetchedarray)
+  * [useFetchOnMount](#usefetchonmount)
+  * [Additional Usage Information](#additional-usage-information)
+    * [Caching data](#caching-data)
+      * [Caching Definition and Precedence Order](#caching-definition-and-precedence-order)
+      * [How to Use Cached Calls](#how-to-use-cached-calls)
+    * [Storing fetched data in state](#storing-fetched-data-in-state)
+    * [Screen Reader Alerts](#screen-reader-alerts)
+    * [Listening for Request State Changes](#listening-for-request-state-changes)
+* [API](#api)
+  * [Definitions](#definitions)
+  * [DataFetchProvider](#datafetchprovider)
+  * [useDataFetch](#usedatafetch-2)
+    * [useDataFetch methods](#usedatafetch-methods)
+      * [Request Level Options](#request-level-options)
+  * [useFetchedArray](#usefetchedarray-1)
+    * [Caveats](#caveats)
+    * [API](#api-1)
+  * [useFetchOnMount](#usefetchonmount-1)
+* [Testing Your Application with useDataFetch](#testing-your-application-with-usedatafetch)
+  * [Spying Data Fetching](#spying-data-fetching)
+* [Development](#development)
+  * [Testing](#testing)
+    * [Running Tests](#running-tests)
+* [Contributing](#contributing)
+* [Troubleshooting](#troubleshooting)
 
-Created by [gh-md-toc](https://github.com/ekalinin/github-markdown-toc)
-
+Table of Contents created by [gh-md-toc](https://github.com/ekalinin/github-markdown-toc)
 ## Install
 
 With npm
@@ -77,7 +84,10 @@ export function MakeGet({
 }
 ```
 
-Then put them altogether (full example below):
+This library defines multiple hooks that build on each other and use the `DataFetchProvider`. They are defined below.
+### useDataFetch
+
+`useDataFetch` is the basic building block hook of this library. The basic usage of `useDataFetch`:
 
 ```jsx
 import React, { useState } from 'react'
@@ -109,7 +119,38 @@ function MakeGet () {
 
 See `example/App.js` for more examples of how to use the other type of http requests (POST, PUT, DELETE, PATCH, and a custom config).
 
-## useFetchOnMount
+### useFetchedArray
+
+`useFetchedArray` is a hook that acts like `useState` but fetches the initial collection of values from a server. It supports the full lifecycle of items in a collection. The basic usage is as follows:
+
+```jsx
+function UseManagedArrayFetch() {
+  const [ids, setIds, requestState, dataFetch] = useFetchedArray(
+    '/randomIds'
+  )
+
+  return (
+    <div>
+      <input
+        type="button"
+        onClick={() => dataFetch.post()}
+        value="Make Managed Array State Post"
+      />
+
+      ... (other calls from dataFetch)
+
+      <div>{requestState}</div>
+      {ids.map((id) => (
+        <div key={id.id}>{id.data}</div>
+      ))}
+    </div>
+  )
+}
+```
+
+See `example/App.js` for examples on how to use the other functions from datafetch.
+
+### useFetchOnMount
 
 `useFetchOnMount` handles the common use case of loading data on mount. Without `useFetchOnMount`, when fetching data on mount of a component is handled as follows:
 
@@ -149,13 +190,18 @@ The advantages of this api:
 
 All of the options used for the base `useDataFetch` can be passed down in the hookOptions section (and all options defined at the same levels as before are handled the same way).
 
-### Caching data
+See `example/App.js` for more a more complete example.
+
+### Additional Usage Information
+
+There are a few features worth calling out specifically in the usage section.
+#### Caching data
 
 Caching data is useful if you have several components in your application that use the same data but it is inconvenient to pass that data using props. Setting a cache behavior allows you to setup a datafetch for an endpoint and then retrieve that same data only once for multiple components.
 
 This behavior is used in other libraries like `react-relay` and `apollo` where graphql calls are stored, except that the caching algorithm of this cache is just a simple last-recently-used cache and does not attempt to make any assumptions about your data and how to cache it.
 
-#### Caching Definition and Precedence Order
+##### Caching Definition and Precedence Order
 
 Caching can be set in three separate places (described in precedence order):
 
@@ -165,7 +211,7 @@ Caching can be set in three separate places (described in precedence order):
 
 In other words, the caching level set at `DataFetchProvider` is overridden by the caching level set at `useDataFetch`, which in turn is overridden by the caching level set at the actual request call.
 
-#### How to Use Cached Calls
+##### How to Use Cached Calls
 
 To use cached calls, you can set the value at any of the level described and the cache will return the stored value for any call made to a url with the same path.
 
@@ -230,7 +276,9 @@ function MakeOtherGet () {
 }
 ```
 
-### Storing fetched data in state
+#### Storing fetched data in state
+
+* Note that this is primarily a concern of `useDataFetch` and `useFetchOnMount` as the other hooks store the state for you internally (using this strategy).
 
 To store fetched data you will need to pass a configuration object to `useDataFetch` that updates the state.
 
@@ -263,7 +311,7 @@ function MakeStoredGetFetch() {
 }
 ```
 
-### Screen Reader Alerts
+#### Screen Reader Alerts
 
 To add screen reader alerts (which you should - [read more here](https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/ARIA_Live_Regions)) pass in a function that accepts the message for the alert.
 
@@ -285,7 +333,7 @@ function MakeGetWithSrAlert() {
 }
 ```
 
-### Listening for Request State Changes
+#### Listening for Request State Changes
 
 Many libraries will provide mechanisms to automatically detect the state that the request is in - retrieving data, was it a success, was it a failure. These state changes are useful to control the ui when fetching data.
 
@@ -442,10 +490,112 @@ The request level allows you to dynamically change a few of the options by defin
 | `useCache` | Use the cache for all calls returned |
 | `requestConfig` | Used to send any last minute configuration, such as dymanically generated query params - `{ params: { id: '1234' } }`. |
 | `requestStateListener` | Listen for the state changes in the request object. This is a function that recieves a string dictating the state (one of `running`\|`success`(for success)|`error`(for error)). |
+### useFetchedArray
 
-## useFetchOnMount
+To use `useFetchedArray`, do the following (note that this still requires the DataFetchProvider wrapping the component at some higher level):
 
-To use `useFetchOnMount`, do the following:
+```jsx
+function UseManagedArrayFetch() {
+  const [ids, setIds, requestState, dataFetch] = useFetchedArray(
+    '/randomIds'
+  )
+
+  return (
+    <div>
+      <input
+        type="button"
+        onClick={() => dataFetch.post()}
+        value="Make Managed Array State Post"
+      />
+
+      ... (other calls from dataFetch)
+
+      <div>{requestState}</div>
+      {ids.map((id) => (
+        <div key={id.id}>{id.data}</div>
+      ))}
+    </div>
+  )
+}
+```
+
+You can also add values to the array directly that are not persisted:
+
+```jsx
+function UseManagedArrayFetch() {
+  const [ids, setIds, requestState, dataFetch] = useFetchedArray(
+    '/randomIds'
+  )
+
+  return (
+    <div>
+      <input
+        type="button"
+        onClick={() =>
+          setIds([
+            ...ids,
+            {
+              id: nanoid(),
+              data: 'I am created without a trip to the server!',
+            },
+          ])
+        }
+        value="Make Managed Array State Update without Server Trip"
+      />
+
+      ... (other calls from dataFetch)
+
+      <div>{requestState}</div>
+      {ids.map((id) => (
+        <div key={id.id}>{id.data}</div>
+      ))}
+    </div>
+  )
+}
+```
+
+#### Caveats
+
+`useFetchedArray` makes a few assumptions about your data, namely that each item in your collection is an object and that it contains a field called `id`. It also assumes that you are using restful endpoints similar to the Ruby on Rails convention of storing resource ids in the path (ie `/posts` is the collection endpoint and `/posts/:id` is a specific resource in the collection).
+
+These caveats can be overcome by passing in a few configuration functions:
+
+| Configuration Key | Description |
+| ----------------  | ----------- |
+| `transform` | use this format data such that all values are an object and there is an `id` field present (and to transform any way you want). Note that you can also do this with axios (See [https://github.com/axios/axios#request-config](https://github.com/axios/axios#request-config) and the `transformData` configuration section for more information) |
+| `updatesUsePath` | If your endpoints do not follow the convention described, you can pass in a function that will update the path to what it needs to be (ie if it stays the same, the function would be `(path) => path`) |
+| `extractObjectKey` | If you have a key but it is not called id, you can pass in a function that will extract the correct key. ie. `(data) => data.myKey` |
+| `replaceValue` | <ul><li>If you have data that doesn't match the shape described (ie objects that have an id field) you can pass in your own replaceValue function when you do an update call.</li><li>This will be called only on (`PUT`\|`PATCH`)</li><li>Example: `({data}) => { ...getdata; setValues(newData) // setValues output from hook def}`</li></ul> |
+| `removeValue` | Similar to `replaceValue` except it is used to remove the value on `destroy` only. See `replaceValue` for more details. |
+
+Also, only `get`, `post`, `put`, `patch`, `destroy` are defined in the `dataFetch` object. If you require the flexibility provided by the full `useDataFetch` api, then this hook should not be used and `useDataFetch` should be used instead.
+
+#### API
+
+The following table describes the parameters passed into the hook:
+
+| Parameter | Type | Description |
+| --------- | ---- | ----------- |
+| `path` | `string` | <ul><li>The path to your resource.</li><li>This can be a fully qualified url, or just the path instance if you configured your DataFetchProvider to use a baseUrl (see [https://github.com/axios/axios#request-config](https://github.com/axios/axios#request-config) for more information on the axios api).</li></ul> |
+| `config` | `object` | An object that accepts specific values. |
+
+The config parameter has a shape as follows:
+
+| Configuration Key | Type | Description |
+| ----------------- | ---- | ----------- |
+| `onSuccess` | func | A callback to fire when the request is successful. Note that this is called after the `updateStateHook` is called (if defined) |
+| `onFailure` | func | A callback to fire when the request is a failure. Fires after `updateStateHook` |
+| `hookOptions` | object | The options for the underlying `useDataFetch` function. See the `useDataFetch` config options for more details. |
+| `transform` | func | use this format data such that all values are an object and there is an `id` field present (and to transform any way you want). Note that you can also do this with axios (See [https://github.com/axios/axios#request-config](https://github.com/axios/axios#request-config) and the `transformData` configuration section for more information) |
+| `updatesUsePath` | func | If your endpoints do not follow the convention described, you can pass in a function that will update the path to what it needs to be (ie if it stays the same, the function would be `(path) => path`) |
+| `extractObjectKey` | func | If you have a key but it is not called id, you can pass in a function that will extract the correct key. ie. `(data) => data.myKey` |
+| `replaceValue` | func |<ul><li>If you have data that doesn't match the shape described (ie objects that have an id field) you can pass in your own replaceValue function when you do an update call.</li><li>This will be called only on (`PUT`\|`PATCH`)</li><li>Example: `({data}) => { ...getdata; setValues(newData) // setValues output from hook def}`</li></ul> |
+| `removeValue` | func | Similar to `replaceValue` except it is used to remove the value on `destroy` only. See `replaceValue` for more details. |
+
+
+### useFetchOnMount
+
+To use `useFetchOnMount`, do the following (note that this still requires the DataFetchProvider wrapping the component at some higher level):
 
 
 ```jsx

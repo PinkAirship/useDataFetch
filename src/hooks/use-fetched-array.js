@@ -28,7 +28,7 @@ export function useFetchedArray(
     transform: passThrough,
     replaceValue: null,
     removeValue: null,
-    updatesUsePath: true,
+    updatesUsePath: null,
     extractObjectKey: getKey,
   }
 ) {
@@ -64,8 +64,8 @@ export function useFetchedArray(
         setValues(newValues)
       }
   const updatePath = updatesUsePath
-    ? (data) => `${path}/${data.id}`
-    : () => path
+    ? updatesUsePath(path)
+    : (data) => `${path}/${data.id}`
 
   const managedDataFetch = {
     get: dataFetch.get,
