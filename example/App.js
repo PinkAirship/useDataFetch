@@ -56,6 +56,13 @@ export function makeMockAxios(axiosInstance) {
     const id = nanoid()
     return [200, [{ id, data: `id: ${id}` }]]
   })
+  mock.onGet('/randomIds/rootJson').reply(function () {
+    const id = nanoid()
+    return [
+      200,
+      { root: [{ id, data: `id: ${id} - from a root json` }] },
+    ]
+  })
   mock.onPut(/randomIds\/[\w_\d-]+/).reply(function (config) {
     const id = config.url.split('/')[2]
     return [200, { id, data: `id: ${id} - I changed via a put!` }]
@@ -123,6 +130,7 @@ export default function App() {
         <MakeGetWithSrAlert />
         <MakeStoredGetFetch />
         <UseManagedArrayFetch />
+        <UseManagedArrayFetchWithRootJson />
         <UseManagedFetch />
         <MakeCustomOverwriteData />
       </div>
@@ -365,6 +373,20 @@ export function UseManagedArrayFetch() {
         }
         value="Make Managed Array State Update without Server Trip"
       />
+      <div>{requestState}</div>
+      {ids.map((id) => (
+        <div key={id.id}>{id.data}</div>
+      ))}
+    </div>
+  )
+}
+
+export function UseManagedArrayFetchWithRootJson() {
+  const [ids, , requestState] = useFetchedArray('/randomIds/rootJson')
+
+  return (
+    <div>
+      <div>With a Root Json object</div>
       <div>{requestState}</div>
       {ids.map((id) => (
         <div key={id.id}>{id.data}</div>

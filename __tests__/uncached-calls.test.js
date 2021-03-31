@@ -18,6 +18,7 @@ import {
   MakeQuery,
   UseManagedArrayFetch,
   UseManagedFetch,
+  UseManagedArrayFetchWithRootJson,
   AppThird,
   AppFourth,
 } from '../example/App'
@@ -326,11 +327,20 @@ it('removes divs with ids when destroying using use-fetched-array', async () => 
   expect(node).toBeInTheDocument()
 })
 
+it('gets the data from the server correctly when root json used', async () => {
+  const { findByText, queryByText } = render(
+    <UseManagedArrayFetchWithRootJson />
+  )
+  await findByText(/With a Root Json object/)
+  expect(queryByText(/id:/)).toBeInTheDocument()
+})
+
 it('gets the data from the server', async () => {
   const { findByText, queryByText } = render(<UseManagedFetch />)
   await findByText(/Make Managed State Post/)
   expect(queryByText(/myId/)).toBeInTheDocument()
 })
+
 it('posts the data to the server', async () => {
   const { findByText, queryByText } = render(<UseManagedFetch />)
   const button = await findByText(/Make Managed State Post/)
@@ -338,6 +348,7 @@ it('posts the data to the server', async () => {
   await findByText(/Make Managed State Post/)
   expect(queryByText(/Hi\sthere!/)).toBeInTheDocument()
 })
+
 it('puts the data to the server', async () => {
   const { findByText, queryByText } = render(<UseManagedFetch />)
   const button = await findByText(/Make Managed State Post/)
@@ -345,6 +356,7 @@ it('puts the data to the server', async () => {
   await findByText(/Make Managed State Put/)
   expect(queryByText(/id:/)).toBeInTheDocument()
 })
+
 it('patches the data to the server', async () => {
   const { findByText, queryByText } = render(<UseManagedFetch />)
   const button = await findByText(/Make Managed State Patch/)
@@ -352,6 +364,7 @@ it('patches the data to the server', async () => {
   await findByText(/Make Managed State Put/)
   expect(queryByText(/id:/)).toBeInTheDocument()
 })
+
 it('destroys the data', async () => {
   const { findByText, queryByText } = render(<UseManagedFetch />)
   const button = await findByText(/Make Managed State Destroy/)
