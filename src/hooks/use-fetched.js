@@ -17,6 +17,9 @@ export function useFetched(
     createUsesPath: null,
   }
 ) {
+  onSuccess = onSuccess ? onSuccess : passThrough
+  onFailure = onFailure ? onFailure : passThrough
+
   const [value, setValue] = useState({})
   const [requestState, setRequestState] = useState('pending')
   const updateStateHook = useCallback(({ data }) => {

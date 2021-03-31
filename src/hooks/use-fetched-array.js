@@ -49,6 +49,15 @@ export function useFetchedArray(
     extractObjectKey: getKey,
   }
 ) {
+  // TODO: the defaults for the above are not set when built, figure it out
+  // and these can be removed
+  extractList = extractList ? extractList : getArray
+  onSuccess = onSuccess ? onSuccess : passThrough
+  onFailure = onFailure ? onFailure : passThrough
+  transform = transform ? transform : passThrough
+  extractObjectKey = extractObjectKey ? extractObjectKey : getKey
+  //////
+
   const [values, setValues] = useState([])
   const [requestState, setRequestState] = useState('pending')
   const updateStateHook = useCallback(
