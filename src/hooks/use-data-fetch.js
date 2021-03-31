@@ -13,7 +13,7 @@ export function useDataFetch(
     useCache: hookUseCache,
     requestStateListener: hookRequestStateListener,
   } = {
-    alertScreenReaderWith,
+    alertScreenReaderWith: undefined,
     hookRequestConfig: {},
     hookUseCache: undefined,
     hookRequestStateListener: noop,
