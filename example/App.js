@@ -294,7 +294,7 @@ export function MakeGetWithData({
 
 let getFunction
 // Storing the data works with all other data fetch methods
-export function MakeStoredGetFetch() {
+export function MakeStoredGetFetch({ log = console.log }) {
   const [ids, setIds] = useState([])
   const [, triggerRerender] = useState()
   const updateStateHook = useCallback(
@@ -306,10 +306,10 @@ export function MakeStoredGetFetch() {
   })
 
   if (getFunction == get) {
-    console.log('same get')
+    log('same get')
   } else {
     getFunction = get
-    console.log('different get')
+    log('different get')
   }
 
   return (

@@ -190,6 +190,24 @@ it('creates divs with ids when clicked for Make Stored Get Fetch', async () => {
   await findByText(/Created id/)
 })
 
+it('keeps stable get until the store is updated', async () => {
+  const messages = []
+  const log = (message) => messages.push(message)
+  const { findByText, queryAllByText } = render(
+    <MakeStoredGetFetch log={log} />
+  )
+  const createdIdNodes = queryAllByText(/Created id/)
+  // eslint-disable-next-line jest-dom/prefer-in-document
+  expect(createdIdNodes).toHaveLength(0)
+  let button = await findByText(/Stable Callback/)
+  button.click()
+  expect(messages[1]).toEqual('same get')
+  button = await findByText(/Make Stored Get/)
+  button.click()
+  await findByText(/Created id/)
+  expect(messages[2]).toEqual('different get')
+})
+
 it('creates divs with ids when clicked for Make Stored Get Fetch', async () => {
   const show = jest.fn()
   const { findByText, queryAllByText } = render(
