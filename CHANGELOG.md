@@ -11,6 +11,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+### Changed
+
+- Fixed useCache to run callbacks if cache found
+
+### Removed
+
+## [3.2.5] - 2021-03-31
+
+### Added
+
 - Added the window.dataFetchCaches option to DataFetchProvider to see what the cache holds
 
 ### Changed

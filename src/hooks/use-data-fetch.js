@@ -62,32 +62,36 @@ export function useDataFetch(
         ? methodRequestStateListener
         : hookRequestStateListener || noop
 
+    let promise
     if (computedUseCache) {
       const cachedValue = cache.get(path)
       if (cachedValue) {
         requestStateListener('success')
-        return Promise.resolve(cachedValue)
+        promise = Promise.resolve(cachedValue)
       }
     }
-    // don't overwrite data from requestConfig unless it is present.
-    const requestData = data ? { data } : {}
-    const finalRequestConfig = {
-      method,
-      url: path,
-      ...hookRequestConfig,
-      ...methodRequestConfig,
-      ...requestData,
+    if (!promise) {
+      // don't overwrite data from requestConfig unless it is present.
+      const requestData = data ? { data } : {}
+      const finalRequestConfig = {
+        method,
+        url: path,
+        ...hookRequestConfig,
+        ...methodRequestConfig,
+        ...requestData,
+      }
+      requestStateListener('running')
+      promise = dataFetchInstance(finalRequestConfig)
     }
-    requestStateListener('running')
-    return dataFetchInstance(finalRequestConfig)
+
+    return promise
       .then((responseData) => {
         requestStateListener('success')
         if (computedUseCache) cache.set(path, responseData)
         return responseData
       })
       .then((responseData) => {
-        if (hookToUpdateState)
-          hookToUpdateState(responseData, finalRequestConfig)
+        if (hookToUpdateState) hookToUpdateState(responseData)
         return responseData
       })
       .then((responseData) => {
