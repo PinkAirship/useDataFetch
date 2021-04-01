@@ -333,7 +333,10 @@ export function MakeStoredGetFetch({ log = console.log }) {
 
 export function UseManagedArrayFetch() {
   const [ids, setIds, requestState, dataFetch] = useFetchedArray(
-    '/randomIds'
+    '/randomIds',
+    {
+      hookOptions: { useCache: true },
+    }
   )
 
   return (

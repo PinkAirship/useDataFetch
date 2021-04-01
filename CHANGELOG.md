@@ -7,6 +7,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [3.2.5] - 2021-03-31
+
+### Added
+
+- Added the window.dataFetchCaches option to DataFetchProvider to see what the cache holds
+
+### Changed
+
+- Fixed useCache to only run on a GET request
+
+### Removed
+
 ## [3.2.4] - 2021-03-31
 
 ### Added

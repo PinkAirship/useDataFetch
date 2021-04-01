@@ -50,9 +50,9 @@ export function useDataFetch(
         : updateStateHook
     // Order of precedence: method use - method defined - context defined
     let computedUseCache =
-      typeof hookUseCache != 'undefined'
+      (typeof hookUseCache != 'undefined'
         ? hookUseCache
-        : contextUseCache
+        : contextUseCache) && method.toLowerCase() == 'get'
     computedUseCache =
       typeof methodUseCache != 'undefined'
         ? methodUseCache

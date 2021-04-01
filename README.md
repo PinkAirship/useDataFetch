@@ -435,6 +435,7 @@ Below is table of the props that can be passed into the provider:
 | `useCache` | `boolean` | <ul><li>Use a cache for all calls made with this provider. <li>Defaults to false. <li>Can be overridden when defining the request methods, and also when making a request. |
 | `cacheSize` | `number` | <ul><li>Set the number of items to keep track of before ejecting values from the cache. <li>Defaults to 50. <li>Cache is a last-recently-used cache. |
 | `updateStateHook` | `function` | <ul><li>A function that updates the state you wish to house your fetched data. <li>This function will be passed the responseData and the requestConfig - `(responseData, requestConfig) => {}`. <li> This hook is overridden if `useDataFetch` also defines `updateStateHook`.<li>See the `<AppThird>` component in `example/App.js` for example of how it can be used.  |
+| `debugCache` | `boolean` | Attaches an array to `window` with key `dataFetchCaches`. Use this to see what value was is in the cache. |
 
 ### useDataFetch
 

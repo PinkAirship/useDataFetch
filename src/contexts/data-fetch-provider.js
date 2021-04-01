@@ -23,6 +23,7 @@ export function DataFetchProvider({
   useCache = false,
   cacheSize = 50,
   updateStateHook = noop,
+  debugCache = false,
 }) {
   if (makeMockDataFetchInstance && dataFetchInstance) {
     throw 'Cannot use `makeMockDataFetchInstance` and `dataFetchInstance` together.'
@@ -36,6 +37,12 @@ export function DataFetchProvider({
   }
 
   const cache = new LruCache(cacheSize)
+  if (debugCache && window) {
+    if (!window.dataFetchCaches) {
+      window.dataFetchCaches = []
+    }
+    window.dataFetchCaches.push(cache)
+  }
 
   const contextValue = {
     dataFetchInstance,
