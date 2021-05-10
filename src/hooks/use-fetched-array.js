@@ -102,26 +102,26 @@ export function useFetchedArray(
         setValues([...values, ...newValues])
       }
       return dataFetch.post(postData, {
-        ...opts,
         updateStateHook: postUpdateStateHook,
+        ...opts,
       })
     },
     put: (putData, opts = {}) => {
       return dataFetch.put(putData, {
-        ...opts,
         updateStateHook: updateValue,
         requestConfig: {
           url: updatePath(putData),
         },
+        ...opts,
       })
     },
     patch: (patchData, opts = {}) => {
       return dataFetch.patch(patchData, {
-        ...opts,
         updateStateHook: updateValue,
         requestConfig: {
           url: updatePath(patchData),
         },
+        ...opts,
       })
     },
     destroy: (destroyData, removalKey, opts = {}) => {
@@ -136,11 +136,11 @@ export function useFetchedArray(
             setValues(newValues)
           }
       return dataFetch.destroy(destroyData, {
-        ...opts,
         updateStateHook: destroyUpdateStateHook,
         requestConfig: {
           url: updatePath(destroyData),
         },
+        ...opts,
       })
     },
   }
