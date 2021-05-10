@@ -7,6 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [3.2.6] - 2021-05-10
+
+### Added
+
+### Changed
+
+- Fixed useFetchedArray at the method level to properly override values
+
+### Removed
+
 ## [3.2.5] - 2021-03-31
 
 ### Added
