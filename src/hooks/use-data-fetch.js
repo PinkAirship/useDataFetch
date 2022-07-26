@@ -86,16 +86,21 @@ export function useDataFetch(
 
     return promise
       .then((responseData) => {
+        if (responseData.config.signal?.aborted) return responseData
         requestStateListener('success')
         if (computedUseCache) cache.set(path, responseData)
         return responseData
       })
       .then((responseData) => {
+        if (responseData.config.signal?.aborted) return responseData
         if (hookToUpdateState) hookToUpdateState(responseData)
         return responseData
       })
       .then((responseData) => {
-        if (alertScreenReaderWith)
+        if (
+          alertScreenReaderWith &&
+          !responseData.config.signal?.aborted
+        )
           screenReaderAlert(alertScreenReaderWith)
         return responseData
       })

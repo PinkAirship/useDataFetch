@@ -37,6 +37,7 @@ export function useFetchedArray(
     removeValue: removeValue,
     updatesUsePath: updatesUsePath,
     extractObjectKey: extractObjectKey,
+    cancelRequestOnUnmount: cancelRequestOnUnmount,
   } = {
     onSuccess: passThrough,
     onFailure: passThrough,
@@ -47,6 +48,7 @@ export function useFetchedArray(
     removeValue: null,
     updatesUsePath: null,
     extractObjectKey: getKey,
+    cancelRequestOnUnmount: false,
   }
 ) {
   // TODO: the defaults for the above are not set when built, figure it out
@@ -75,6 +77,7 @@ export function useFetchedArray(
       requestStateListener: setRequestState,
       updateStateHook,
     },
+    cancelRequestOnUnmount: cancelRequestOnUnmount,
   })
 
   const updateValue = replaceValue

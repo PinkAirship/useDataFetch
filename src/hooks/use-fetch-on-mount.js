@@ -12,24 +12,33 @@ export function useFetchOnMount(
     onSuccess: (request) => request,
     onFailure: (request) => request,
     hookOptions: {},
+    cancelRequestOnUnmount: false,
   }
 ) {
+  const [controller] = useState(new AbortController())
   const [renders, setRenders] = useState(0)
   const dataFetch = useDataFetch(path, { ...hookOptions })
 
   useEffect(() => {
-    const req = dataFetch
+    dataFetch
       .get(undefined, {
         requestConfig: {
-          signal: new AbortController().signal,
+          signal: controller.signal,
         },
       })
-      .then(onSuccess)
-      .catch(onFailure)
+      .then((req) => {
+        if (cancelRequestOnUnmount && req.config.signal.aborted)
+          return req
+        return onSuccess
+      })
+      .catch((error) => {
+        if (cancelRequestOnUnmount) return error
+        return onFailure
+      })
     // eslint-disable-next-line react-hooks/exhaustive-deps
     return () => {
       if (cancelRequestOnUnmount) {
-        req.abort()
+        controller.abort()
       }
     }
   }, [])

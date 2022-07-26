@@ -7,7 +7,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-## [3.2.7] - 2022-07-26
+## [3.3.1] - 2022-07-26
+
+### Added
+
+- fixed the functionality for `cancelRequestOnMount` to work for the hooks.
+- Cancels the callbacks for a canceled request if that request is finished but is unmounted before the request is canceled
+
+### Changed
+
+### Removed
+
+## [3.3.0] - 2022-07-26
 
 ### Added
 

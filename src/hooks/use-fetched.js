@@ -10,11 +10,13 @@ export function useFetched(
     onFailure: onFailure,
     hookOptions: hookOptions,
     createUsesPath: createUsesPath,
+    cancelRequestOnUnmount: cancelRequestOnUnmount,
   } = {
     onSuccess: passThrough,
     onFailure: passThrough,
     hookOptions: {},
     createUsesPath: null,
+    cancelRequestOnUnmount: false,
   }
 ) {
   onSuccess = onSuccess ? onSuccess : passThrough
@@ -33,6 +35,7 @@ export function useFetched(
       requestStateListener: setRequestState,
       updateStateHook,
     },
+    cancelRequestOnUnmount: cancelRequestOnUnmount,
   })
 
   const createPath = createUsesPath
