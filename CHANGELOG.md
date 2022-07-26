@@ -7,6 +7,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [3.2.7] - 2022-07-26
+
+### Added
+
+### Changed
+
+- useFetchOnMount, useFetched, and useFetchedArray now cancels axios requests when `cancelRequestOnUnmount` is passed
+- updated several outdated packages
+
+### Removed
+
 ## [3.2.6] - 2021-05-10
 
 ### Added

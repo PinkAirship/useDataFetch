@@ -7,6 +7,7 @@ export function useFetchOnMount(
     onSuccess: onSuccess,
     onFailure: onFailure,
     hookOptions: hookOptions,
+    cancelRequestOnUnmount: cancelRequestOnUnmount,
   } = {
     onSuccess: (request) => request,
     onFailure: (request) => request,
@@ -17,8 +18,20 @@ export function useFetchOnMount(
   const dataFetch = useDataFetch(path, { ...hookOptions })
 
   useEffect(() => {
-    dataFetch.get().then(onSuccess).catch(onFailure)
+    const req = dataFetch
+      .get(undefined, {
+        requestConfig: {
+          signal: new AbortController().signal,
+        },
+      })
+      .then(onSuccess)
+      .catch(onFailure)
     // eslint-disable-next-line react-hooks/exhaustive-deps
+    return () => {
+      if (cancelRequestOnUnmount) {
+        req.abort()
+      }
+    }
   }, [])
   // Must reset the useEffect so that a refetch will update the state of the updateStateHook
   // when the get is applied again (possibly in a refetch)

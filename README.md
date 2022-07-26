@@ -609,6 +609,7 @@ The config parameter has a shape as follows:
 | `onFailure` | func | A callback to fire when the request is a failure. Fires after `updateStateHook` |
 | `hookOptions` | object | The options for the underlying `useDataFetch` function. See the `useDataFetch` config options for more details. |
 | `createUsesPath` | func | If your endpoints do not follow the convention described, you can pass in a function that will update the path to what it needs to be (ie `(path) => /my/new/path`) |
+| `cancelRequestOnUnmount` | boolean | Cancels your fetch request if the react component is unmounted. False by default. |
 
 ### useFetchedArray
 
@@ -724,6 +725,7 @@ The config parameter has a shape as follows:
 | `replaceValue` | func |<ul><li>If you have data that doesn't match the shape described (ie objects that have an id field) you can pass in your own replaceValue function when you do an update call.</li><li>This will be called only on (`PUT`\|`PATCH`)</li><li>Example: `({data}) => { ...getdata; setValues(newData) // setValues output from hook def}`</li></ul> |
 | `removeValue` | func | Similar to `replaceValue` except it is used to remove the value on `destroy` only. See `replaceValue` for more details. |
 | `extractList` | func | This hook will extract data from an api get call if that data returned is a list or an object with a single root key whose value is a list. Other returned data will need to be transformed. <ul><li>`[{"id": ..}]` is acceptable</li><li>`{"root":[{"id":...}]}` is acceptable</li><li>`{"root":[{"id":...}], "otherKey":...}` is NOT acceptable. You must define this function youself.</li></ul>  |
+| `cancelRequestOnUnmount` | boolean | Cancels your fetch request if the react component is unmounted. False by default. |
 
 
 ### useFetchOnMount
@@ -797,6 +799,7 @@ The config parameter has a shape as follows:
 | `onSuccess` | func | A callback to fire when the request is successful. Note that this is called after the `updateStateHook` is called (if defined) |
 | `onFailure` | func | A callback to fire when the request is a failure. Fires after `updateStateHook` |
 | `hookOptions` | object | The options for the underlying `useDataFetch` function. See the `useDataFetch` config options for more details. |
+| `cancelRequestOnUnmount` | boolean | Cancels your fetch request if the react component is unmounted. False by default. |
 
 ## Testing Your Application with useDataFetch
 
