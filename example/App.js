@@ -384,6 +384,42 @@ export function UseManagedArrayFetch() {
   )
 }
 
+export function UseManagedArrayFetchMultiple() {
+  const [ids, setIds, requestState, dataFetch] = useFetchedArray(
+    '/randomIds',
+    {
+      hookOptions: { useCache: true },
+    }
+  )
+
+  return (
+    <div>
+      <input
+        type="button"
+        onClick={() => {
+          for (let i = 0; i < 3; i++) {
+            dataFetch.post()
+          }
+        }}
+        value="Make Managed Array State Post Three"
+      />
+      <input
+        type="button"
+        onClick={() => {
+          for (let i = 0; i < (ids.length - 1); i++) {
+            dataFetch.destroy(ids[i])
+          }
+        }}
+        value="Make Managed Array State Destroy All But One"
+      />
+      <div>{requestState}</div>
+      {ids.map((id) => (
+        <div key={id.id}>{id.data}</div>
+      ))}
+    </div>
+  )
+}
+
 export function UseManagedArrayFetchWithRootJson() {
   const [ids, , requestState] = useFetchedArray('/randomIds/rootJson')
 

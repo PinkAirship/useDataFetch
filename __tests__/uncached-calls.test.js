@@ -17,6 +17,7 @@ import {
   MakeGetWithParams,
   MakeQuery,
   UseManagedArrayFetch,
+  UseManagedArrayFetchMultiple,
   UseManagedFetch,
   UseManagedArrayFetchWithRootJson,
   AppThird,
@@ -343,6 +344,28 @@ it('removes divs with ids when destroying using use-fetched-array', async () => 
     /I am created without a trip to the server!/
   )
   expect(node).toBeInTheDocument()
+})
+
+  it('creates and removes multiple divs with ids using use-fetched-array', async () => {
+    const { findByText, findAllByText, queryAllByText } = render(
+      <UseManagedArrayFetchMultiple />
+    )
+    // POST 
+    const postButton = await findByText(/Make Managed Array State Post Three/)
+    let createdIdNodes = queryAllByText(/id:/)
+    expect(createdIdNodes).toHaveLength(1)
+    postButton.click()
+    const nodes = await findAllByText(/I was created via a post!/)
+    expect(nodes).toHaveLength(3)
+    createdIdNodes = queryAllByText(/id:/)
+    expect(createdIdNodes).toHaveLength(4)
+
+    // DESTROY
+    const destroyButton = await findByText(/Make Managed Array State Destroy All But One/)
+    destroyButton.click()
+    await findByText(/Make Managed Array State Destroy All But One/)
+    createdIdNodes = queryAllByText(/id:/)
+    expect(createdIdNodes).toHaveLength(1)
 })
 
 it('gets the data from the server correctly when root json used', async () => {
