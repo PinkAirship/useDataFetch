@@ -7,6 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [3.3.2] - 2022-08-16
+
+### Added
+
+### Changed
+
+- Fixed the setState behavior of managed data fetches by using the functional setState form to allow for multiple updates to the state in the same render cycle.
+
+### Removed
+
 ## [3.3.1] - 2022-07-26
 
 ### Added
