@@ -88,9 +88,11 @@ export function useFetchedArray(
         const oldValueIndex = values.findIndex(
           (v) => v.id == objectKey
         )
-        const newValues = [...values]
-        newValues[oldValueIndex] = newData
-        setValues(newValues)
+        setValues((state) => {
+          const newValues = [...state]
+          newValues[oldValueIndex] = newData
+          return newValues
+        })
       }
   const updatePath = updatesUsePath
     ? updatesUsePath(path)
@@ -102,7 +104,7 @@ export function useFetchedArray(
       const postUpdateStateHook = ({ data }) => {
         let newValues = transform(data)
         newValues = Array.isArray(newValues) ? newValues : [newValues]
-        setValues([...values, ...newValues])
+        setValues((state) => [...state, ...newValues])
       }
       return dataFetch.post(postData, {
         updateStateHook: postUpdateStateHook,
@@ -131,12 +133,14 @@ export function useFetchedArray(
       const destroyUpdateStateHook = removeValue
         ? removeValue
         : () => {
-            const valueIndex = values.findIndex(
-              (j) => j.id === removalKey
-            )
-            const newValues = [...values]
-            newValues.splice(valueIndex, 1)
-            setValues(newValues)
+            setValues((state) => {
+              const valueIndex = state.findIndex(
+                (j) => j.id === removalKey
+              )
+              const newValues = [...state]
+              newValues.splice(valueIndex, 1)
+              return newValues
+            })
           }
       return dataFetch.destroy(destroyData, {
         updateStateHook: destroyUpdateStateHook,
