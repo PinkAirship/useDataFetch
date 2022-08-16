@@ -85,10 +85,10 @@ export function useFetchedArray(
     : ({ data }) => {
         const newData = transform(data)
         const objectKey = extractObjectKey(newData)
-        const oldValueIndex = values.findIndex(
-          (v) => v.id == objectKey
-        )
         setValues((state) => {
+          const oldValueIndex = state.findIndex(
+            (v) => v.id == objectKey
+          )
           const newValues = [...state]
           newValues[oldValueIndex] = newData
           return newValues
