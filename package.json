@@ -53,7 +53,7 @@
     "@babel/plugin-transform-runtime": "^7.12.10",
     "@babel/preset-env": "^7.12.11",
     "@babel/preset-react": "^7.12.10",
-    "@preconstruct/cli": "^2.0.6",
+    "@preconstruct/cli": "^2.2.1",
     "@testing-library/jest-dom": "^5.11.9",
     "@testing-library/react": "^11.2.3",
     "axios": "^0.21.1",
