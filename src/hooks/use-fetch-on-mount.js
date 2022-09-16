@@ -33,7 +33,9 @@ export function useFetchOnMount(
         return req
       })
       .catch((error) => {
-        if (!cancelRequestOnUnmount) return onFailure(error)
+        if (!cancelRequestOnUnmount) {
+          onFailure(error)
+        }
         return error
       })
     // eslint-disable-next-line react-hooks/exhaustive-deps

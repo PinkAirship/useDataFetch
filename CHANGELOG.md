@@ -7,6 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [3.3.4] - 2022-09-16
+
+### Added
+
+### Changed
+
+- Fixed the onFailure callback `useFetchOnMount` to return the error instead of the return value of the `onError` callback. Previously the resutl of the onError callback was returned, which was incorrect.
+
+### Removed
+
 ## [3.3.3] - 2022-09-16
 
 ### Added
