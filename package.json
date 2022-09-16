@@ -1,6 +1,6 @@
 {
   "name": "@pinkairship/use-data-fetch",
-  "version": "3.3.2",
+  "version": "3.3.3",
   "description": "A data fetch hook that stays out of your way.",
   "main": "dist/pinkairship-use-data-fetch.cjs.js",
   "module": "dist/pinkairship-use-data-fetch.esm.js",
