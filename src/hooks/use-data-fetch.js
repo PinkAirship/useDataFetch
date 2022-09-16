@@ -111,145 +111,155 @@ export function useDataFetch(
   }
 
   const get = useMemo(
-    () => (
-      data,
-      {
-        useCache,
-        requestConfig,
-        requestStateListener,
-        updateStateHook,
-      } = {}
-    ) =>
-      makeRequest('get', data, {
-        methodUseCache: useCache,
-        methodUpdateStateHook: updateStateHook,
-        methodRequestConfig: requestConfig,
-        requestStateListener,
-      }),
+    () =>
+      (
+        data,
+        {
+          useCache,
+          requestConfig,
+          requestStateListener,
+          updateStateHook,
+        } = {}
+      ) =>
+        makeRequest('get', data, {
+          methodUseCache: useCache,
+          methodUpdateStateHook: updateStateHook,
+          methodRequestConfig: requestConfig,
+          requestStateListener,
+        }),
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [hookUpdateStateHook]
   )
   const query = useMemo(
-    () => (
-      params,
-      {
-        useCache,
-        requestConfig,
-        requestStateListener,
-        updateStateHook,
-      } = {}
-    ) =>
-      makeRequest('get', undefined, {
-        methodUseCache: useCache,
-        methodUpdateStateHook: updateStateHook,
-        methodRequestConfig: { ...requestConfig, params },
-        requestStateListener,
-      }),
+    () =>
+      (
+        params,
+        {
+          useCache,
+          requestConfig,
+          requestStateListener,
+          updateStateHook,
+        } = {}
+      ) =>
+        makeRequest('get', undefined, {
+          methodUseCache: useCache,
+          methodUpdateStateHook: updateStateHook,
+          methodRequestConfig: { ...requestConfig, params },
+          requestStateListener,
+        }),
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [hookUpdateStateHook]
   )
   const post = useMemo(
-    () => (
-      data,
-      {
-        useCache,
-        requestConfig,
-        requestStateListener,
-        updateStateHook,
-      } = {}
-    ) => {
-      return makeRequest('post', data, {
-        methodUseCache: useCache,
-        methodUpdateStateHook: updateStateHook,
-        methodRequestConfig: requestConfig,
-        requestStateListener,
-      })
-    },
+    () =>
+      (
+        data,
+        {
+          useCache,
+          requestConfig,
+          requestStateListener,
+          updateStateHook,
+        } = {}
+      ) => {
+        return makeRequest('post', data, {
+          methodUseCache: useCache,
+          methodUpdateStateHook: updateStateHook,
+          methodRequestConfig: requestConfig,
+          requestStateListener,
+        })
+      },
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [hookUpdateStateHook]
   )
 
   const put = useMemo(
-    () => (
-      data,
-      {
-        useCache,
-        requestConfig,
-        requestStateListener,
-        updateStateHook,
-      } = {}
-    ) =>
-      makeRequest('put', data, {
-        methodUseCache: useCache,
-        methodUpdateStateHook: updateStateHook,
-        methodRequestConfig: requestConfig,
-        requestStateListener,
-      }),
+    () =>
+      (
+        data,
+        {
+          useCache,
+          requestConfig,
+          requestStateListener,
+          updateStateHook,
+        } = {}
+      ) =>
+        makeRequest('put', data, {
+          methodUseCache: useCache,
+          methodUpdateStateHook: updateStateHook,
+          methodRequestConfig: requestConfig,
+          requestStateListener,
+        }),
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [hookUpdateStateHook]
   )
   const patch = useMemo(
-    () => (
-      data,
-      {
-        useCache,
-        requestConfig,
-        requestStateListener,
-        updateStateHook,
-      } = {}
-    ) =>
-      makeRequest('patch', data, {
-        methodUseCache: useCache,
-        methodUpdateStateHook: updateStateHook,
-        methodRequestConfig: requestConfig,
-        requestStateListener,
-      }),
+    () =>
+      (
+        data,
+        {
+          useCache,
+          requestConfig,
+          requestStateListener,
+          updateStateHook,
+        } = {}
+      ) =>
+        makeRequest('patch', data, {
+          methodUseCache: useCache,
+          methodUpdateStateHook: updateStateHook,
+          methodRequestConfig: requestConfig,
+          requestStateListener,
+        }),
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [hookUpdateStateHook]
   )
   const destroy = useMemo(
-    () => (
-      data,
-      {
-        useCache,
-        requestConfig,
-        requestStateListener,
-        updateStateHook,
-      } = {}
-    ) =>
-      makeRequest('delete', data, {
-        methodUseCache: useCache,
-        methodUpdateStateHook: updateStateHook,
-        methodRequestConfig: requestConfig,
-        requestStateListener,
-      }),
+    () =>
+      (
+        data,
+        {
+          useCache,
+          requestConfig,
+          requestStateListener,
+          updateStateHook,
+        } = {}
+      ) =>
+        makeRequest('delete', data, {
+          methodUseCache: useCache,
+          methodUpdateStateHook: updateStateHook,
+          methodRequestConfig: requestConfig,
+          requestStateListener,
+        }),
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [hookUpdateStateHook]
   )
   const request = useMemo(
-    () => (
-      data,
-      {
-        useCache,
-        requestConfig,
-        requestStateListener,
-        updateStateHook,
-      } = {}
-    ) => {
-      const mergedConfig = { ...hookRequestConfig, ...requestConfig }
-      if (!hookRequestConfig.url) {
-        throw 'Request must have url set.'
-      }
-      if (!hookRequestConfig.method) {
-        throw 'Request must have a method set.'
-      }
-      return makeRequest('request', data, {
-        methodUseCache: useCache,
-        methodUpdateStateHook: updateStateHook,
-        methodRequestConfig: mergedConfig,
-        requestStateListener,
-      })
-    },
+    () =>
+      (
+        data,
+        {
+          useCache,
+          requestConfig,
+          requestStateListener,
+          updateStateHook,
+        } = {}
+      ) => {
+        const mergedConfig = {
+          ...hookRequestConfig,
+          ...requestConfig,
+        }
+        if (!hookRequestConfig.url) {
+          throw 'Request must have url set.'
+        }
+        if (!hookRequestConfig.method) {
+          throw 'Request must have a method set.'
+        }
+        return makeRequest('request', data, {
+          methodUseCache: useCache,
+          methodUpdateStateHook: updateStateHook,
+          methodRequestConfig: mergedConfig,
+          requestStateListener,
+        })
+      },
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [hookUpdateStateHook]
   )

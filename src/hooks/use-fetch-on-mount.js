@@ -27,13 +27,14 @@ export function useFetchOnMount(
         },
       })
       .then((req) => {
-        if (cancelRequestOnUnmount && req.config.signal.aborted)
-          return req
-        return onSuccess
+        if (!(cancelRequestOnUnmount && req.config.signal.aborted)) {
+          onSuccess(req)
+        }
+        return req
       })
       .catch((error) => {
-        if (cancelRequestOnUnmount) return error
-        return onFailure
+        if (!cancelRequestOnUnmount) return onFailure(error)
+        return error
       })
     // eslint-disable-next-line react-hooks/exhaustive-deps
     return () => {
