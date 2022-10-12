@@ -129,18 +129,30 @@ export function useFetchedArray(
         ...opts,
       })
     },
-    destroy: (destroyData, removalKey, opts = {}) => {
+    destroy: (destroyData, removalKeys, opts = {}) => {
+      const removeKeyValue = (removalKey) => {
+        setValues((state) => {
+          const valueIndex = state.findIndex(
+            (j) => j.id === removalKey
+          )
+          const newValues = [...state]
+          newValues.splice(valueIndex, 1)
+          return newValues
+        })
+      }
       const destroyUpdateStateHook = removeValue
         ? removeValue
         : () => {
-            setValues((state) => {
-              const valueIndex = state.findIndex(
-                (j) => j.id === removalKey
-              )
-              const newValues = [...state]
-              newValues.splice(valueIndex, 1)
-              return newValues
-            })
+            if (
+              removalKeys != undefined &&
+              Array.isArray(removalKeys)
+            ) {
+              removalKeys.forEach((removalKey) => {
+                removeKeyValue(removalKey)
+              })
+            } else {
+              removeKeyValue(removalKeys)
+            }
           }
       return dataFetch.destroy(destroyData, {
         updateStateHook: destroyUpdateStateHook,

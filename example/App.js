@@ -365,6 +365,11 @@ export function UseManagedArrayFetch() {
       />
       <input
         type="button"
+        onClick={() => dataFetch.destroy(ids, ids)}
+        value="Make Managed Array State Destroy All"
+      />
+      <input
+        type="button"
         onClick={() =>
           setIds([
             ...ids,
