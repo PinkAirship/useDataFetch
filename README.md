@@ -691,7 +691,7 @@ These caveats can be overcome by passing in a few configuration functions:
 
 Also, only `get`, `post`, `put`, `patch`, `destroy` are defined in the `dataFetch` object. If you require the flexibility provided by the full `useDataFetch` api, then this hook should not be used and `useDataFetch` should be used instead.
 
-The `destroy` function is slightly changed - it has the following call signature: `destroy(destroyData, removalKey, opts)`. `destroyData` is the same as `useDataFetch`, `removalKey` is the value of the id of the object that is being remove, and `opts` is the configuration opts for the underlying hook.
+The `destroy` function is slightly changed - it has the following call signature: `destroy(destroyData, removalKeys, opts)`. `destroyData` is the same as `useDataFetch`, `removalKeys` is the value (or values) of the id of the object that is being remove, and `opts` is the configuration opts for the underlying hook. If `removalKeys` is an array, then each value in the array is removed from the state.
 
 Example destroy call:
 
@@ -701,6 +701,9 @@ destroy(undefined, 'myId', {} //this last option can also be ommitted)
 
 // send data and remove this id
 destroy({id: 'asd'}, 'foo')
+
+// destroy multiple at once
+destroy([{id: 'asd'}, {id: 'bsd'}], ['asd', 'foo'])
 ```
 
 #### API
