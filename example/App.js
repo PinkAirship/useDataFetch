@@ -366,7 +366,7 @@ export function UseManagedArrayFetch() {
       <input
         type="button"
         onClick={() => dataFetch.destroy(ids, ids)}
-        value="Make Managed Array State Destroy All"
+        value="Make Managed Array Destroy All State"
       />
       <input
         type="button"
@@ -411,7 +411,7 @@ export function UseManagedArrayFetchMultiple() {
       <input
         type="button"
         onClick={() => {
-          for (let i = 0; i < (ids.length - 1); i++) {
+          for (let i = 0; i < ids.length - 1; i++) {
             dataFetch.destroy(ids[i])
           }
         }}
@@ -440,9 +440,8 @@ export function UseManagedArrayFetchWithRootJson() {
 }
 
 export function UseManagedFetch() {
-  const [id, setId, requestState, dataFetch] = useFetched(
-    '/echo/myId'
-  )
+  const [id, setId, requestState, dataFetch] =
+    useFetched('/echo/myId')
 
   return (
     <div>
