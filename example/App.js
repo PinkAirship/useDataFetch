@@ -390,7 +390,7 @@ export function UseManagedArrayFetch() {
 }
 
 export function UseManagedArrayFetchMultiple() {
-  const [ids, setIds, requestState, dataFetch] = useFetchedArray(
+  const [ids, , requestState, dataFetch] = useFetchedArray(
     '/randomIds',
     {
       hookOptions: { useCache: true },
@@ -411,7 +411,7 @@ export function UseManagedArrayFetchMultiple() {
       <input
         type="button"
         onClick={() => {
-          for (let i = 0; i < (ids.length - 1); i++) {
+          for (let i = 0; i < ids.length - 1; i++) {
             dataFetch.destroy(ids[i])
           }
         }}
@@ -440,9 +440,8 @@ export function UseManagedArrayFetchWithRootJson() {
 }
 
 export function UseManagedFetch() {
-  const [id, setId, requestState, dataFetch] = useFetched(
-    '/echo/myId'
-  )
+  const [id, setId, requestState, dataFetch] =
+    useFetched('/echo/myId')
 
   return (
     <div>
