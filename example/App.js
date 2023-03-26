@@ -390,7 +390,7 @@ export function UseManagedArrayFetch() {
 }
 
 export function UseManagedArrayFetchMultiple() {
-  const [ids, setIds, requestState, dataFetch] = useFetchedArray(
+  const [ids, , requestState, dataFetch] = useFetchedArray(
     '/randomIds',
     {
       hookOptions: { useCache: true },
